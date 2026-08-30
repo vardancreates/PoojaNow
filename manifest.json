@@ -1,0 +1,10 @@
+{
+  "name": "PoojaNow",
+  "short_name": "PoojaNow",
+  "description": "Pooja samagri, delivered to your doorstep in Jalandhar.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF9F1",
+  "theme_color": "#E8871E",
+  "icons": []
+}
