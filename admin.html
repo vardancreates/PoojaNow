@@ -271,6 +271,7 @@
           </div>
           <div class="order-detail-row"><b>${o.customerName}</b> · ${o.phone}</div>
           <div class="order-detail-row">${o.address}</div>
+          ${o.location ? `<div class="order-detail-row"><a href="https://www.google.com/maps?q=${o.location.lat},${o.location.lng}" target="_blank" style="color:var(--saffron-dark);">📍 Open exact location in Google Maps</a></div>` : ''}
           <div class="order-detail-row">Payment: ${o.paymentMode === 'pay_now_upi' ? 'Paid via UPI' + (o.utr ? ' (UTR: ' + o.utr + ')' : '') : 'Pay at delivery'}</div>
           <div class="order-items">
             ${o.items.map(i => `<div>${i.qty} × ${i.name} <span style="color:var(--muted);">(${i.unit || ''})</span> — ₹${i.price * i.qty}</div>`).join('')}

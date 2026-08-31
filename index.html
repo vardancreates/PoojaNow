@@ -179,6 +179,11 @@
   .qr-box.show { max-height: 340px; opacity:1; }
   .qr-placeholder { width: 140px; height:140px; margin: 0 auto 10px; background: repeating-conic-gradient(var(--charcoal) 0% 25%, white 0% 50%) 0 0/16px 16px; border-radius: 10px; border: 4px solid var(--charcoal); }
   .delivery-estimate { display:flex; align-items:center; gap:8px; background: var(--ivory-warm); border:1px solid var(--line); border-radius:12px; padding:11px 14px; font-size:12.5px; color:var(--maroon-deep); font-weight:600; margin-top:14px; }
+  .location-box { background: var(--ivory-warm); border:1.5px dashed var(--gold); border-radius:12px; padding:13px 14px; margin-top:14px; text-align:center; }
+  .location-box.captured { border-style:solid; border-color: var(--saffron); background: var(--cream-card); }
+  .location-status { font-size:12px; color: var(--maroon-deep); font-weight:600; }
+  .location-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+  .location-btn { background: linear-gradient(135deg, var(--marigold), var(--saffron-dark)); color:white; border:none; padding:9px 18px; border-radius:10px; font-size:12.5px; font-weight:600; cursor:pointer; margin-top:8px; font-family:'Poppins',sans-serif; }
   .confirm-icon { text-align:center; font-size: 58px; margin: 30px 0 8px; animation: floatIn 0.6s var(--ease); }
   @keyframes floatIn { from{opacity:0; transform:translateY(-14px) scale(0.8);} to{opacity:1; transform:translateY(0) scale(1);} }
   .confirm-title { text-align:center; font-size:21px; font-weight:700; color:var(--maroon-deep); }
@@ -234,10 +239,44 @@
   .floating-cart-count { font-size:11px; opacity:0.85; }
   .floating-cart-amount { font-size:15px; font-weight:700; margin-top:1px; }
   .floating-cart-cta { font-size:13px; font-weight:700; display:flex; align-items:center; gap:4px; }
+    .auth-overlay {
+    position: fixed; inset:0; z-index: 500;
+    background: linear-gradient(160deg, var(--maroon-deep), var(--maroon));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding: 30px; text-align:center;
+  }
+  .auth-overlay .flame-dot { width:64px; height:64px; font-size:30px; margin-bottom:18px; }
+  .auth-title { color:white; font-family:'Cormorant Garamond', serif; font-size:26px; font-weight:700; }
+  .auth-sub { color: rgba(255,255,255,0.8); font-size:13px; margin-top:8px; max-width:280px; line-height:1.5; }
+  .google-btn {
+    background:white; color:#3D2817; border:none; border-radius:14px; padding:13px 24px;
+    display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; cursor:pointer;
+    margin-top:28px; font-family:'Poppins',sans-serif; box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+  .google-btn img { width:18px; height:18px; }
+  .guest-btn {
+    background:transparent; color: rgba(255,255,255,0.75); border:1px solid rgba(255,255,255,0.35);
+    border-radius:12px; padding:10px 20px; font-size:12.5px; font-weight:500; cursor:pointer;
+    margin-top:14px; font-family:'Poppins',sans-serif;
+  }
+  .auth-note { color: rgba(255,255,255,0.55); font-size:10.5px; margin-top:22px; max-width:260px; line-height:1.5; }
 </style>
 </head>
 
 <body>
+  <div class="auth-overlay" id="authOverlay">
+    <div class="flame-dot">🪔</div>
+    <div class="auth-title" id="authTitle">Welcome to PoojaNow</div>
+    <div class="auth-sub" id="authSub">Sign in with Google to save your details and track orders across devices — or continue browsing as a guest.</div>
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="">
+      Sign in with Google
+    </button>
+    <button class="guest-btn" id="guestBtn" onclick="continueAsGuest()">Continue as guest</button>
+    <div class="auth-note" id="authNote">You can browse without signing in — but you'll need to sign in with Google before placing an order.</div>
+  </div>
+
+  <div class="greet-bar">
 
   <div class="greet-bar">
     <div class="brand-row">
@@ -283,6 +322,11 @@
           <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">Scan to pay ₹<span id="qrAmount">0</span></div>
           <div class="form-group" style="margin-bottom:0;"><label>UTR / reference number</label><input type="text" id="utrInput" placeholder="Enter after payment"></div>
         </div>
+      </div>
+        <div class="location-box" id="locationBox">
+        <div class="location-status" id="locationStatus">📍 Location required to place order</div>
+        <div class="location-sub" id="locationSub">We use this to guide delivery to your exact doorstep</div>
+        <button class="location-btn" id="locationBtn" onclick="captureLocation()">Share my location</button>
       </div>
       <div class="delivery-estimate" id="deliveryEstimateLine">🚚 Estimated delivery: —</div>
       <button class="primary-btn" id="placeOrderBtn" onclick="placeOrder()">Place order</button>
@@ -368,6 +412,76 @@
   let cart = {};
   let activeCategory = 'all';
   let observer;
+  let capturedLocation = null;
+  const googleProvider = new firebase.auth.GoogleAuthProvider();
+  let currentUser = null;
+  let savedProfile = null;
+  let checkoutGateActive = false;
+
+  function signInWithGoogle() {
+    auth.signInWithPopup(googleProvider).catch(err => {
+      console.error(err);
+      alert('Sign-in failed. Please try again.');
+    });
+  }
+
+  function continueAsGuest() {
+    sessionStorage.setItem('poojanow_guest', '1');
+    document.getElementById('authOverlay').style.display = 'none';
+  }
+
+  function signOutUser() {
+    auth.signOut();
+    sessionStorage.removeItem('poojanow_guest');
+    location.reload();
+  }
+
+  function showAuthOverlay(forCheckout) {
+    const title = document.getElementById('authTitle');
+    const sub = document.getElementById('authSub');
+    const guestBtn = document.getElementById('guestBtn');
+    const note = document.getElementById('authNote');
+    if (forCheckout) {
+      title.textContent = 'Sign in to place your order';
+      sub.textContent = 'We use Google Sign-In instead of OTP to verify your order — quick, free, and it saves your details for next time.';
+      guestBtn.style.display = 'none';
+      note.textContent = '';
+    } else {
+      title.textContent = 'Welcome to PoojaNow';
+      sub.textContent = 'Sign in with Google to save your details and track orders across devices — or continue browsing as a guest.';
+      guestBtn.style.display = 'inline-block';
+      note.textContent = "You can browse without signing in — but you'll need to sign in with Google before placing an order.";
+    }
+    document.getElementById('authOverlay').style.display = 'flex';
+  }
+
+  auth.onAuthStateChanged(async (user) => {
+    currentUser = user;
+    if (user) {
+      document.getElementById('authOverlay').style.display = 'none';
+      const doc = await db.collection('customers').doc(user.uid).get();
+      savedProfile = doc.exists ? doc.data() : null;
+      if (savedProfile) {
+        const nameEl = document.getElementById('custName');
+        const phoneEl = document.getElementById('custPhone');
+        const addrEl = document.getElementById('custAddress');
+        if (nameEl && !nameEl.value) nameEl.value = savedProfile.name || '';
+        if (phoneEl && !phoneEl.value) phoneEl.value = savedProfile.phone || '';
+        if (addrEl && !addrEl.value) addrEl.value = savedProfile.address || '';
+      }
+      if (checkoutGateActive) {
+        checkoutGateActive = false;
+        placeOrder();
+      }
+    } else {
+      savedProfile = null;
+      if (sessionStorage.getItem('poojanow_guest')) {
+        document.getElementById('authOverlay').style.display = 'none';
+      } else {
+        showAuthOverlay(false);
+      }
+    }
+  });
   const STATUS_STEPS = [
     { key: 'placed', label: 'Order placed' },
     { key: 'packed', label: 'Packed by shop' },
@@ -464,33 +578,34 @@ function renderSearchResults(term) {
     });
   }
 
-  async function renderOrdersPanel() {
+   async function renderOrdersPanel() {
     const container = document.getElementById('ordersContent');
-    const saved = getSavedOrderIds();
-    if (saved.length === 0) {
-      container.innerHTML = `<div class="empty-state"><div class="icon">📦</div>No orders yet<br><span style="font-size:11px;">Your orders will show up here once you place one.</span></div>
-        <div style="text-align:center; margin-top:20px;"><a href="#" onclick="openPanel('track'); return false;" style="font-size:12px; color:var(--muted); text-decoration:underline;">Have an order ID from another device? Track it here</a></div>`;
-      return;
-    }
     container.innerHTML = `<div class="loading-note">Loading your orders…</div>`;
-    const results = await Promise.all(saved.map(async s => {
-      const doc = await db.collection('orders').doc(s.orderId).get();
-      return doc.exists ? { id: s.orderId, data: doc.data() } : null;
-    }));
-    const valid = results.filter(Boolean);
+    let valid = [];
+    if (currentUser) {
+      const snap = await db.collection('orders').where('customerId', '==', currentUser.uid).orderBy('createdAt', 'desc').get();
+      valid = snap.docs.map(d => ({ id: d.id, data: d.data() }));
+    } else {
+      const saved = getSavedOrderIds();
+      const results = await Promise.all(saved.map(async s => {
+        const doc = await db.collection('orders').doc(s.orderId).get();
+        return doc.exists ? { id: s.orderId, data: doc.data() } : null;
+      }));
+      valid = results.filter(Boolean);
+    }
     if (valid.length === 0) {
-      container.innerHTML = `<div class="empty-state"><div class="icon">📦</div>No orders found</div>`;
+      container.innerHTML = `<div class="empty-state"><div class="icon">📦</div>No orders yet<br><span style="font-size:11px;">Your orders will show up here once you place one.</span></div>`;
       return;
     }
-    container.innerHTML = valid.map(o => `
+    const signOutRow = currentUser ? `<div style="text-align:center; font-size:11.5px; color:var(--muted); margin-bottom:14px;">Signed in as ${currentUser.email} · <a href="#" onclick="signOutUser(); return false;" style="color:var(--saffron-dark); text-decoration:underline;">Sign out</a></div>` : '';
+    container.innerHTML = signOutRow + valid.map(o => `
       <div class="order-summary-card" onclick="expandOrder('${o.id}')">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div><b>#${o.id}</b><div style="font-size:11px; color:var(--muted); margin-top:2px;">₹${o.data.total} · ${o.data.items.length} items</div></div>
           <div style="font-size:12px; font-weight:600; color:var(--saffron-dark);">${STATUS_LABELS_CUSTOMER[o.data.status] || o.data.status}</div>
         </div>
       </div>`).join('') +
-      `<div id="expandedOrderTrack"></div>
-       <div style="text-align:center; margin-top:16px;"><a href="#" onclick="openPanel('track'); return false;" style="font-size:11px; color:var(--muted); text-decoration:underline;">Track an order from another device</a></div>`;
+      `<div id="expandedOrderTrack"></div>`;
     expandOrder(valid[0].id, valid[0].data);
   }
 
@@ -725,9 +840,41 @@ function renderDeliveryEstimate() {
       qrBox.classList.add('show');
     } else { qrBox.classList.remove('show'); }
   }
+    function captureLocation() {
+    const statusEl = document.getElementById('locationStatus');
+    const subEl = document.getElementById('locationSub');
+    const btnEl = document.getElementById('locationBtn');
+    const boxEl = document.getElementById('locationBox');
+
+    if (!navigator.geolocation) {
+      statusEl.textContent = '⚠️ Location not supported on this browser';
+      return;
+    }
+    btnEl.textContent = 'Getting location…';
+    btnEl.disabled = true;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        capturedLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        boxEl.classList.add('captured');
+        statusEl.textContent = '✅ Location captured';
+        subEl.textContent = 'This helps us deliver to your exact spot';
+        btnEl.style.display = 'none';
+      },
+      (err) => {
+        console.error(err);
+        statusEl.textContent = '⚠️ Could not get location';
+        subEl.textContent = err.code === 1 ? 'Please allow location access in your browser settings, then try again' : 'Please try again';
+        btnEl.textContent = 'Share my location';
+        btnEl.disabled = false;
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
 
   // ============ PLACE ORDER (writes real Firestore doc) ============
   async function placeOrder() {
+    if (!currentUser) { checkoutGateActive = true; showAuthOverlay(true); return; }
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
@@ -735,6 +882,7 @@ function renderDeliveryEstimate() {
     const utr = document.getElementById('utrInput').value.trim();
 
     if (!name || !phone || !address) { alert('Please fill in your name, phone number, and address to continue.'); return; }
+    if (!capturedLocation) { alert('Please share your location before placing the order — tap "Share my location" above.'); return; }
     const items = Object.values(cart);
     if (items.length === 0) { alert('Your cart is empty.'); return; }
 
@@ -751,6 +899,8 @@ function renderDeliveryEstimate() {
       items: items.map(i => ({ productId: i.product.id, name: i.product.name, unit: i.product.unit || '', price: i.product.price, qty: i.qty })),
       itemTotal, deliveryFee, total: itemTotal + deliveryFee,
       customerName: name, phone, address,
+      location: capturedLocation,
+      customerId: currentUser.uid,
       paymentMode: payMode, utr: utr || null,
       status: 'placed', notes: '',
       deliveryDate: deliveryDate.toISOString(),
@@ -758,9 +908,9 @@ function renderDeliveryEstimate() {
     };
 
     try {
-            await db.collection('orders').doc(orderId).set(orderData);
+        await db.collection('orders').doc(orderId).set(orderData);
+      await db.collection('customers').doc(currentUser.uid).set({ name, phone, address, email: currentUser.email || null }, { merge: true });
       saveOrderId(orderId);
-      initMiniOrderBar();
       document.getElementById('orderIdText').textContent = '#' + orderId;
       document.getElementById('confirmDeliveryLine').textContent = `🚚 Estimated delivery: ${formatDeliveryDate(deliveryDate)}`;
       renderStatusTrack('confirmStatusTrack', 'placed');  
@@ -771,6 +921,13 @@ function renderDeliveryEstimate() {
       document.getElementById('custName').value = '';
       document.getElementById('custPhone').value = '';
       document.getElementById('custAddress').value = '';
+      capturedLocation = null;
+      document.getElementById('locationBox').classList.remove('captured');
+      document.getElementById('locationStatus').textContent = '📍 Location required to place order';
+      document.getElementById('locationSub').textContent = 'We use this to guide delivery to your exact doorstep';
+      document.getElementById('locationBtn').style.display = 'inline-block';
+      document.getElementById('locationBtn').textContent = 'Share my location';
+      document.getElementById('locationBtn').disabled = false;
     } catch (err) {
       console.error(err);
       alert('Something went wrong placing your order. Please try again.');
@@ -824,7 +981,8 @@ function renderDeliveryEstimate() {
   }
 
   // ============ PANEL NAV ============
-    function openPanel(id) {
+        function openPanel(id) {
+  document.querySelectorAll('.panel.open').forEach(p => p.classList.remove('open'));
   if (id === 'cart') renderCart();
   if (id === 'orders') renderOrdersPanel();
   if (id === 'checkout') renderDeliveryEstimate();

@@ -2,25 +2,33 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'vardankumargotra@gmail.com';
+    }
+
     // Catalog: anyone can read (so customers can browse),
-    // only a logged-in admin can add/edit/delete items.
+    // only the admin can add/edit/delete items.
     match /categories/{catId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
     match /products/{prodId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
 
-    // Orders: anyone can create an order and fetch ONE order
-    // by its exact ID (for order tracking) — but nobody can
-    // browse/list all orders unless they're the logged-in admin.
+    // Customer profiles: a signed-in customer can read/write only their own profile.
+    match /customers/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Orders: a signed-in customer can create an order tied to their own account,
+    // and read only their own orders. Only the admin can list/update/delete all orders.
     match /orders/{orderId} {
-      allow create: if true;
+      allow create: if request.auth != null && request.resource.data.customerId == request.auth.uid;
       allow get: if true;
-      allow list: if request.auth != null;
-      allow update, delete: if request.auth != null;
+      allow list: if isAdmin() || (request.auth != null && resource.data.customerId == request.auth.uid);
+      allow update, delete: if isAdmin();
     }
   }
 }
