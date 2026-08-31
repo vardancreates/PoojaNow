@@ -174,6 +174,7 @@
   const STATUS_LABELS = { placed: 'Placed', packed: 'Packed', out_for_delivery: 'Out for delivery', delivered: 'Delivered' };
   const CLOUDINARY_CLOUD_NAME = 'uyvay5lw';
   const CLOUDINARY_UPLOAD_PRESET = 'poojanow';
+
   const PLACEHOLDER_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="#8B2635" stroke-width="1.5"><path d="M12 2 L12 6 M8 10 C8 6 16 6 16 10 C16 14 8 14 8 18 L16 18" stroke-linecap="round"/></svg>`;
 
   function thumbHTML(imageUrl, name, size) {
@@ -183,25 +184,25 @@
   }
 
   async function uploadImageIfSelected(fileInputEl, pathPrefix) {
-  const file = fileInputEl.files[0];
-  if (!file) return null;
+    const file = fileInputEl.files[0];
+    if (!file) return null;
 
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-  formData.append('folder', `poojanow/${pathPrefix}`);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('folder', `poojanow/${pathPrefix}`);
 
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-    { method: 'POST', body: formData }
-  );
-  const data = await res.json();
-  if (!data.secure_url) {
-    console.error('Cloudinary upload failed:', data);
-    throw new Error('Image upload failed');
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+      { method: 'POST', body: formData }
+    );
+    const data = await res.json();
+    if (!data.secure_url) {
+      console.error('Cloudinary upload failed:', data);
+      throw new Error('Image upload failed');
+    }
+    return data.secure_url;
   }
-  return data.secure_url;
-}
 
   let categories = [];
   let products = [];
@@ -310,10 +311,14 @@
             <div class="prod-row">
               <div class="prod-row-main">
                 ${thumbHTML(p.imageUrl, p.name)}
-                <div>${p.name} — <span style="color:var(--muted);">${p.unit || ''}</span> — ₹${p.price} ${p.active === false ? '<em style="color:#C0392B;">(hidden)</em>' : ''}</div>
+                <div>${p.name} — <span style="color:var(--muted);">${p.unit || ''}</span> — ₹${p.price}
+                  ${p.active === false ? '<em style="color:#C0392B;">(hidden)</em>' : ''}
+                  ${p.inStock === false ? '<em style="color:#C96A0F;">(out of stock)</em>' : ''}
+                </div>
               </div>
               <div class="prod-actions">
                 <button class="btn secondary small" onclick="editProduct('${p.id}')">Edit</button>
+                <button class="btn ${p.inStock === false ? '' : 'secondary'} small" onclick="toggleStock('${p.id}', ${p.inStock !== false})">${p.inStock === false ? 'Mark in stock' : 'Mark out of stock'}</button>
                 <button class="btn secondary small" onclick="toggleProduct('${p.id}', ${p.active !== false})">${p.active === false ? 'Show' : 'Hide'}</button>
                 <button class="btn danger small" onclick="deleteProduct('${p.id}')">Delete</button>
               </div>
@@ -366,7 +371,7 @@
     const fileInput = document.getElementById(`newImage-${catId}`);
     if (!name || isNaN(price)) { alert('Please enter at least a name and price.'); return; }
     const imageUrl = await uploadImageIfSelected(fileInput, 'products');
-    const data = { catId, name, unit, price, active: true };
+    const data = { catId, name, unit, price, active: true, inStock: true };
     if (imageUrl) data.imageUrl = imageUrl;
     await db.collection('products').add(data);
   }
@@ -411,6 +416,10 @@
 
   function toggleProduct(prodId, currentlyActive) {
     db.collection('products').doc(prodId).update({ active: !currentlyActive });
+  }
+
+  function toggleStock(prodId, currentlyInStock) {
+    db.collection('products').doc(prodId).update({ inStock: !currentlyInStock });
   }
 
   function deleteProduct(prodId) {
@@ -459,7 +468,7 @@
     });
     seedProducts.forEach(([catId, name, unit, price]) => {
       const ref = db.collection('products').doc();
-      batch.set(ref, { catId, name, unit, price, active: true });
+      batch.set(ref, { catId, name, unit, price, active: true, inStock: true });
     });
     await batch.commit();
     alert('Sample catalog added! Items show a placeholder icon until you upload real photos for each one.');

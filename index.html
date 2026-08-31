@@ -67,57 +67,87 @@
   .search-bar:focus-within { border-color: var(--saffron); }
   .search-bar input { border:none; outline:none; font-family:'Poppins',sans-serif; font-size: 13.5px; flex:1; background:transparent; color: var(--charcoal); }
   .search-bar input::placeholder { color: var(--muted); }
-  .chip-row { display:flex; gap: 8px; overflow-x:auto; margin-top: 10px; padding-bottom: 2px; scrollbar-width:none; }
+  .chip-row { display:flex; gap: 14px; overflow-x:auto; margin-top: 12px; padding-bottom: 2px; scrollbar-width:none; }
   .chip-row::-webkit-scrollbar { display:none; }
   .chip {
-    flex-shrink:0; padding: 8px 15px; border-radius: 20px; font-size: 12.5px; font-weight: 500; cursor:pointer;
-    border: 1.5px solid var(--line); background: var(--cream-card); color: var(--charcoal);
-    transition: all 0.25s var(--ease); white-space:nowrap; display:flex; align-items:center; gap:6px;
+    flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:6px;
+    cursor:pointer; width:62px;
   }
-  .chip-img { width:16px; height:16px; border-radius:50%; object-fit:cover; }
-  .chip.active { background: linear-gradient(135deg, var(--marigold), var(--saffron)); border-color: transparent; color: white; box-shadow: 0 4px 12px rgba(232,135,30,0.32); }
-  .chip:active { transform: scale(0.94); }
+  .chip-icon-box {
+    width:54px; height:54px; border-radius:16px; background:var(--cream-card);
+    border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center;
+    overflow:hidden; transition: all 0.25s var(--ease);
+  }
+  .chip-icon-box img { width:100%; height:100%; object-fit:cover; }
+  .chip-icon-box svg { width:22px; height:22px; }
+  .chip-label { font-size:10.3px; font-weight:600; color:var(--charcoal); text-align:center; line-height:1.25; }
+  .chip.active .chip-icon-box { border-color:transparent; background:linear-gradient(135deg, var(--marigold), var(--saffron)); box-shadow: 0 4px 12px rgba(232,135,30,0.32); }
+  .chip.active .chip-icon-box svg { stroke: white; }
+  .chip.active .chip-label { color: var(--saffron-dark); }
+  .chip:active .chip-icon-box { transform: scale(0.92); }
 
   .feed { padding: 4px 18px 8px; }
-  .hero-strip {
-    margin: 4px 0 18px; border-radius: 20px; padding: 18px 18px 20px;
-    background: radial-gradient(circle at 88% 15%, rgba(255,255,255,0.28), transparent 42%),
-      linear-gradient(120deg, var(--marigold) 0%, var(--saffron) 60%, var(--saffron-dark) 100%);
-    color: white; position: relative; overflow: hidden; box-shadow: 0 10px 22px rgba(201,106,15,0.26);
+
+  .promo-carousel { position:relative; margin:4px 0 20px; border-radius:20px; overflow:hidden; box-shadow: 0 10px 22px rgba(201,106,15,0.2); }
+  .promo-track { display:flex; transition: transform 0.5s var(--ease); }
+  .promo-slide {
+    min-width:100%; padding: 20px 20px 26px; position:relative; overflow:hidden; color:white; cursor:pointer;
   }
-  .hero-strip::before {
+  .promo-slide::before {
     content:''; position:absolute; inset:0;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='white' stroke-width='0.6' opacity='0.3'%3E%3Ccircle cx='60' cy='60' r='38'/%3E%3Ccircle cx='60' cy='60' r='26'/%3E%3Cpath d='M60 22 L67 44 L60 60 L53 44 Z'/%3E%3Cpath d='M60 98 L67 76 L60 60 L53 76 Z'/%3E%3Cpath d='M22 60 L44 53 L60 60 L44 67 Z'/%3E%3Cpath d='M98 60 L76 67 L60 60 L76 53 Z'/%3E%3C/g%3E%3C/svg%3E");
     background-size: 130px 130px; opacity:0.5;
   }
-  .hero-strip-content { position:relative; z-index:2; }
-  .hero-eyebrow { font-size: 10.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; opacity:0.9; }
-  .hero-title { font-size: 22px; font-weight: 700; margin-top: 4px; line-height:1.25; }
-  .hero-sub { font-size: 12px; margin-top: 6px; opacity: 0.95; max-width: 260px; line-height:1.5; }
+  .promo-slide-content { position:relative; z-index:2; }
+  .promo-eyebrow { font-size: 10.5px; font-weight:600; letter-spacing:1px; text-transform:uppercase; opacity:0.9; }
+  .promo-title { font-size: 22px; font-weight: 700; margin-top: 4px; line-height:1.25; font-family:'Cormorant Garamond', serif; }
+  .promo-sub { font-size: 12px; margin-top: 6px; opacity: 0.95; max-width: 260px; line-height:1.5; }
+  .promo-dots { position:absolute; bottom:11px; left:20px; display:flex; gap:5px; z-index:3; }
+  .promo-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.5); transition: all 0.3s var(--ease); }
+  .promo-dot.active { width:16px; background:white; }
 
   .section-heading { font-size: 17px; font-weight: 600; color: var(--maroon-deep); margin: 22px 0 12px; display:flex; align-items:center; gap:8px; }
   .section-heading-img { width:22px; height:22px; border-radius:6px; object-fit:cover; }
-  .product-list { display:flex; flex-direction:column; gap:11px; }
+  .product-list { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
   .product-card {
-    background: var(--cream-card); border-radius: 16px; padding: 12px; display:flex; gap: 12px;
+    background: var(--cream-card); border-radius: 16px; padding: 10px; display:flex; flex-direction:column;
     border: 1px solid var(--line); box-shadow: 0 2px 8px rgba(139,38,53,0.04);
     opacity: 0; transform: translateY(18px); transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
   }
   .product-card.visible { opacity: 1; transform: translateY(0); }
-  .product-thumb { width: 58px; height: 58px; background: linear-gradient(160deg, var(--ivory-warm), var(--gold-light)); border-radius: 14px; display:flex; align-items:center; justify-content:center; font-size: 24px; flex-shrink:0; overflow:hidden; }
+  .product-thumb-wrap { position:relative; margin-bottom:10px; }
+  .product-thumb { width: 100%; aspect-ratio: 1/0.88; background: linear-gradient(160deg, var(--ivory-warm), var(--gold-light)); border-radius: 13px; display:flex; align-items:center; justify-content:center; font-size: 24px; overflow:hidden; }
   .product-thumb img { width:100%; height:100%; object-fit:cover; }
-  .product-thumb svg { width:22px; height:22px; }
-  .product-info { flex:1; display:flex; flex-direction:column; justify-content:center; gap:2px; min-width:0; }
-  .product-name { font-size: 13.8px; font-weight: 600; }
-  .product-unit { font-size: 11px; color: var(--muted); }
-  .product-price { font-size: 14px; font-weight: 700; color: var(--maroon-deep); margin-top: 2px; }
-  .product-action { display:flex; align-items:center; }
-  .add-btn { background: var(--ivory-warm); border: 1.5px solid var(--saffron); color: var(--saffron-dark); font-weight: 700; font-size: 12px; padding: 7px 16px; border-radius: 10px; cursor:pointer; transition: transform 0.15s var(--ease); }
-  .add-btn:active { transform: scale(0.9); }
+  .product-thumb svg { width:26px; height:26px; }
+  .qty-fab {
+    position:absolute; bottom:-9px; right:6px; background: linear-gradient(135deg, var(--marigold), var(--saffron));
+    border:none; color:white; width:30px; height:30px; border-radius:9px; font-size:18px; font-weight:700;
+    cursor:pointer; box-shadow: 0 3px 8px rgba(232,135,30,0.4); display:flex; align-items:center; justify-content:center;
+    transition: transform 0.15s var(--ease);
+  }
+  .qty-fab:active { transform: scale(0.88); }
+  .qty-fab-stepper {
+    position:absolute; bottom:-9px; right:6px; background: linear-gradient(135deg, var(--marigold), var(--saffron));
+    border-radius:9px; display:flex; align-items:center; padding:3px 6px; gap:7px; box-shadow: 0 3px 8px rgba(232,135,30,0.4);
+  }
+  .qty-fab-stepper button { background:none; border:none; color:white; font-size:14px; font-weight:700; cursor:pointer; width:14px; }
+  .qty-fab-stepper span { color:white; font-size:11.5px; font-weight:700; min-width:12px; text-align:center; }
+  .product-info { flex:1; display:flex; flex-direction:column; min-width:0; }
+  .product-name { font-size: 12.6px; font-weight: 600; line-height:1.32; min-height: 2.6em; }
+  .product-unit { font-size: 10.5px; color: var(--muted); margin-top:3px; }
+  .product-price { font-size: 13.5px; font-weight: 700; color: var(--maroon-deep); margin-top: 5px; }
+  .out-of-stock-tag { font-size: 10px; font-weight:700; color:#C0392B; background:#FDEAEA; padding:2px 8px; border-radius:6px; display:inline-block; margin-top:5px; }
+  .product-card.is-out-of-stock .product-thumb { filter: grayscale(0.6); opacity:0.6; }
+  
+  .recent-label { font-size:12px; font-weight:600; color:var(--muted); margin: 6px 0 10px; }
+  .recent-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 6px; }
+  .recent-chip { background: var(--ivory-warm); border:1px solid var(--line); border-radius:20px; padding:7px 14px; font-size:12.5px; color:var(--charcoal); cursor:pointer; }
+  .recent-chip:active { transform: scale(0.95); }
+
+  /* Standalone qty stepper — used in cart panel (grid cards use the compact .qty-fab-stepper instead) */
   .qty-stepper { display:flex; align-items:center; gap:10px; background: linear-gradient(135deg, var(--marigold), var(--saffron)); color: white; border-radius: 10px; padding: 5px 10px; }
   .qty-stepper button { background:none; border:none; color:white; font-size:15px; cursor:pointer; font-weight:700; }
   .qty-stepper span { font-size: 13px; font-weight:600; min-width:14px; text-align:center; }
-  .no-results, .empty-catalog { text-align:center; padding: 50px 20px; color: var(--muted); font-size:13px; }
 
   .panel { position: fixed; top:0; right:0; width:100%; max-width:460px; height:100%; background: var(--ivory); z-index: 100; transform: translateX(100%); transition: transform 0.4s var(--ease); overflow-y:auto; padding-bottom: 30px; }
   .panel.open { transform: translateX(0); }
@@ -148,6 +178,7 @@
   .qr-box { text-align:center; background: var(--cream-card); border: 1.5px dashed var(--gold); border-radius: 14px; padding: 20px; margin-top: 10px; max-height:0; overflow:hidden; opacity:0; transition: max-height 0.4s var(--ease), opacity 0.3s var(--ease); }
   .qr-box.show { max-height: 340px; opacity:1; }
   .qr-placeholder { width: 140px; height:140px; margin: 0 auto 10px; background: repeating-conic-gradient(var(--charcoal) 0% 25%, white 0% 50%) 0 0/16px 16px; border-radius: 10px; border: 4px solid var(--charcoal); }
+  .delivery-estimate { display:flex; align-items:center; gap:8px; background: var(--ivory-warm); border:1px solid var(--line); border-radius:12px; padding:11px 14px; font-size:12.5px; color:var(--maroon-deep); font-weight:600; margin-top:14px; }
   .confirm-icon { text-align:center; font-size: 58px; margin: 30px 0 8px; animation: floatIn 0.6s var(--ease); }
   @keyframes floatIn { from{opacity:0; transform:translateY(-14px) scale(0.8);} to{opacity:1; transform:translateY(0) scale(1);} }
   .confirm-title { text-align:center; font-size:21px; font-weight:700; color:var(--maroon-deep); }
@@ -173,15 +204,18 @@
   .nav-icon { font-size: 19px; }
   .loading-note { text-align:center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
 
-  .mini-order-bar {
+  .bottom-stack {
     position: fixed; bottom: 68px; left:50%; transform:translateX(-50%);
-    width: calc(100% - 24px); max-width: 436px;
+    width: calc(100% - 24px); max-width: 436px; z-index: 55;
+    display:flex; flex-direction:column-reverse; gap:8px;
+  }
+  .mini-order-bar {
     background: linear-gradient(135deg, var(--marigold), var(--saffron)); color:white;
     border-radius: 14px; padding: 10px 14px; display:flex; align-items:center; gap:10px;
-    z-index: 55; cursor:pointer; box-shadow: 0 8px 20px rgba(201,106,15,0.35);
+    cursor:pointer; box-shadow: 0 8px 20px rgba(201,106,15,0.35);
     animation: slideUpBar 0.4s var(--ease);
   }
-  @keyframes slideUpBar { from { transform: translateX(-50%) translateY(20px); opacity:0; } to { transform: translateX(-50%) translateY(0); opacity:1; } }
+  @keyframes slideUpBar { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
   .mini-order-icon { font-size:20px; }
   .mini-order-text { flex:1; }
   .mini-order-title { font-size:12.5px; font-weight:700; }
@@ -189,9 +223,20 @@
   .mini-order-arrow { font-size:20px; opacity:0.85; }
   .order-summary-card { background: var(--cream-card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:10px; cursor:pointer; transition: transform 0.15s var(--ease); }
   .order-summary-card:active { transform: scale(0.98); }
-</style>
+
+  .floating-cart-bar {
+    background: linear-gradient(135deg, var(--maroon), var(--maroon-deep)); color:white;
+    border-radius: 14px; padding: 12px 16px; display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; box-shadow: 0 10px 22px rgba(107,20,32,0.32);
+    animation: slideUpBar 0.35s var(--ease);
+  }
+  .floating-cart-left { display:flex; flex-direction:column; }
+  .floating-cart-count { font-size:11px; opacity:0.85; }
+  .floating-cart-amount { font-size:15px; font-weight:700; margin-top:1px; }
+  .floating-cart-cta { font-size:13px; font-weight:700; display:flex; align-items:center; gap:4px; }
 </style>
 </head>
+
 <body>
 
   <div class="greet-bar">
@@ -203,17 +248,13 @@
   </div>
 
   <div class="sticky-controls" id="stickyControls">
-    <div class="search-bar">🔍<input type="text" id="searchInput" placeholder="Search kumkum, diya, havan kit..." oninput="applyFilters()"></div>
-    <div class="chip-row" id="chipRow"></div>
+  <div class="search-bar" onclick="openPanel('search')">🔍<input type="text" id="searchInput" placeholder="Search kumkum, diya, havan kit..." readonly></div>    <div class="chip-row" id="chipRow"></div>
   </div>
 
   <div class="feed">
-    <div class="hero-strip">
-      <div class="hero-strip-content">
-        <div class="hero-eyebrow">Har din ki pooja, aasani se</div>
-        <div class="hero-title">Fresh samagri,<br>delivered with care</div>
-        <div class="hero-sub">Scroll to browse everything for your pooja — daily essentials to festival kits.</div>
-      </div>
+    <div class="promo-carousel" id="promoCarousel">
+      <div class="promo-track" id="promoTrack"></div>
+      <div class="promo-dots" id="promoDots"></div>
     </div>
     <div id="feedSections"><div class="loading-note">Loading catalog…</div></div>
   </div>
@@ -243,6 +284,7 @@
           <div class="form-group" style="margin-bottom:0;"><label>UTR / reference number</label><input type="text" id="utrInput" placeholder="Enter after payment"></div>
         </div>
       </div>
+      <div class="delivery-estimate" id="deliveryEstimateLine">🚚 Estimated delivery: —</div>
       <button class="primary-btn" id="placeOrderBtn" onclick="placeOrder()">Place order</button>
     </div>
   </div>
@@ -253,10 +295,24 @@
     <div class="confirm-title">Order placed!</div>
     <div class="confirm-sub">We've let the shop know — it'll be on its way soon. Save your order ID to track it anytime.</div>
     <div class="order-id-box">Order ID: <b id="orderIdText">#PN10234</b></div>
+    <div class="delivery-estimate" id="confirmDeliveryLine" style="margin:0 18px 16px;">🚚 —</div>
     <div class="back-row" style="position:static; padding-top:6px;"><div class="back-title" style="font-size:17px;">Order status</div></div>
     <div class="status-track" id="confirmStatusTrack"></div>
     <div class="section"><button class="primary-btn" onclick="closeConfirmToHome()">Back to home</button></div>
   </div>
+
+  <!-- SEARCH PANEL -->
+<div class="panel" id="panel-search">
+  <div class="back-row">
+    <div class="back-btn" onclick="closePanel('search')">←</div>
+    <div class="search-bar" style="flex:1;">🔍<input type="text" id="searchPanelInput" placeholder="Search kumkum, diya, havan kit..." oninput="onSearchPanelInput()" autocomplete="off"></div>
+  </div>
+  <div class="section">
+    <div id="recentSearchesWrap"></div>
+    <div class="product-list" id="searchResultsGrid" style="margin-top:6px;"></div>
+    <div id="searchEmptyState"></div>
+  </div>
+</div>
 
   <!-- TRACK ORDER PANEL -->
   <div class="panel" id="panel-track">
@@ -272,21 +328,30 @@
     <div class="back-row"><div class="back-btn" onclick="closePanel('orders')">←</div><div class="back-title">Your Orders</div></div>
     <div class="section" id="ordersContent"></div>
   </div>
-  <!-- MINI LIVE ORDER BAR -->
-  <div class="mini-order-bar" id="miniOrderBar" onclick="openPanel('orders')" style="display:none;">
-    <div class="mini-order-icon">🪔</div>
-    <div class="mini-order-text">
-      <div class="mini-order-title">Order #<span id="miniOrderId"></span></div>
-      <div class="mini-order-status" id="miniOrderStatus"></div>
+  <div class="bottom-stack" id="bottomStack">
+    <!-- MINI LIVE ORDER BAR -->
+    <div class="mini-order-bar" id="miniOrderBar" onclick="openPanel('orders')" style="display:none;">
+      <div class="mini-order-icon">🪔</div>
+      <div class="mini-order-text">
+        <div class="mini-order-title">Order #<span id="miniOrderId"></span></div>
+        <div class="mini-order-status" id="miniOrderStatus"></div>
+      </div>
+      <div class="mini-order-arrow">›</div>
     </div>
-    <div class="mini-order-arrow">›</div>
+    <!-- FLOATING CART BAR -->
+    <div class="floating-cart-bar" id="floatingCartBar" onclick="openPanel('cart')" style="display:none;">
+      <div class="floating-cart-left">
+        <div class="floating-cart-count" id="floatingCartCount">0 items</div>
+        <div class="floating-cart-amount" id="floatingCartAmount">₹0</div>
+      </div>
+      <div class="floating-cart-cta">View Cart ›</div>
+    </div>
   </div>
 
   <!-- BOTTOM NAV -->
-  <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <div class="nav-item active" id="navHome" onclick="scrollToTop()"><div class="nav-icon">🏠</div>Home</div>
-    <div class="nav-item" id="navSearch" onclick="focusSearch()"><div class="nav-icon">🔍</div>Search</div>
+    <div class="nav-item" id="navSearch" onclick="openPanel('search')"><div class="nav-icon">🔍</div>Search</div>
     <div class="nav-item" id="navCart" onclick="openPanel('cart')"><div class="nav-icon">🛒</div>Cart</div>
     <div class="nav-item" id="navOrders" onclick="openPanel('orders')"><div class="nav-icon">📦</div>Orders</div>
   </div>
@@ -311,7 +376,67 @@
   ];
     const STATUS_LABELS_CUSTOMER = { placed: 'Order placed', packed: 'Packed by shop', out_for_delivery: 'Out for delivery', delivered: 'Delivered' };
   const ORDERS_STORAGE_KEY = 'poojanow_orders';
-  let miniBarUnsub = null;
+const RECENT_SEARCH_KEY = 'poojanow_recent_searches';
+let miniBarUnsub = null;
+let searchDebounceTimer = null;
+
+function getRecentSearches() {
+  try { return JSON.parse(localStorage.getItem(RECENT_SEARCH_KEY)) || []; }
+  catch { return []; }
+}
+
+function addRecentSearch(term) {
+  term = term.trim();
+  if (term.length < 2) return;
+  let recent = getRecentSearches().filter(t => t.toLowerCase() !== term.toLowerCase());
+  recent.unshift(term);
+  localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(recent.slice(0, 6)));
+}
+
+function renderRecentSearches() {
+  const recent = getRecentSearches();
+  const wrap = document.getElementById('recentSearchesWrap');
+  if (recent.length === 0) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `
+    <div class="recent-label">Recent searches</div>
+    <div class="recent-chip-row">${recent.map(t => `<div class="recent-chip" onclick="runSearchFromChip('${t.replace(/'/g, "\\'")}')">${t}</div>`).join('')}</div>`;
+}
+
+function runSearchFromChip(term) {
+  document.getElementById('searchPanelInput').value = term;
+  renderSearchResults(term);
+}
+
+function onSearchPanelInput() {
+  const term = document.getElementById('searchPanelInput').value.trim();
+  clearTimeout(searchDebounceTimer);
+  if (term.length === 0) {
+    document.getElementById('searchResultsGrid').innerHTML = '';
+    document.getElementById('searchEmptyState').innerHTML = '';
+    renderRecentSearches();
+    return;
+  }
+  document.getElementById('recentSearchesWrap').innerHTML = '';
+  searchDebounceTimer = setTimeout(() => {
+    renderSearchResults(term);
+    addRecentSearch(term);
+  }, 400);
+}
+
+function renderSearchResults(term) {
+  const lower = term.trim().toLowerCase();
+  const matches = products.filter(p => p.name.toLowerCase().includes(lower));
+  const grid = document.getElementById('searchResultsGrid');
+  const empty = document.getElementById('searchEmptyState');
+  if (matches.length === 0) {
+    grid.innerHTML = '';
+    empty.innerHTML = `<div class="no-results">No items match "${term}" 🙏<br>Try a different word.</div>`;
+    return;
+  }
+  empty.innerHTML = '';
+  grid.innerHTML = matches.map(productCardHTML).join('');
+  grid.querySelectorAll('.product-card').forEach(c => c.classList.add('visible'));
+}
 
   function getSavedOrderIds() {
     try { return JSON.parse(localStorage.getItem(ORDERS_STORAGE_KEY)) || []; }
@@ -393,12 +518,64 @@
   }, err => console.error('products load error', err));
 
   const PLACEHOLDER_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="#C96A0F" stroke-width="1.5"><path d="M12 2 L12 6 M8 10 C8 6 16 6 16 10 C16 14 8 14 8 18 L16 18" stroke-linecap="round"/></svg>`;
+  const ALL_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="#8B2635" stroke-width="1.5"><path d="M12 2 L14.5 9 L22 9 L16 13.5 L18 21 L12 16.5 L6 21 L8 13.5 L2 9 L9.5 9 Z" stroke-linejoin="round"/></svg>`;
+  // ============ DELIVERY DATE ============
+const DELIVERY_CUTOFF_HOUR = 18; // orders after 6 PM ship next day
+
+function getDeliveryDate() {
+  const d = new Date();
+  if (d.getHours() >= DELIVERY_CUTOFF_HOUR) d.setDate(d.getDate() + 1);
+  return d;
+}
+
+function formatDeliveryDate(date) {
+  const today = new Date();
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+  const dateStr = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  if (date.toDateString() === today.toDateString()) return `Today, ${dateStr}`;
+  if (date.toDateString() === tomorrow.toDateString()) return `Tomorrow, ${dateStr}`;
+  return dateStr;
+}
+
+function renderDeliveryEstimate() {
+  const el = document.getElementById('deliveryEstimateLine');
+  if (el) el.textContent = `🚚 Estimated delivery: ${formatDeliveryDate(getDeliveryDate())}`;
+}
+
+  // ============ PROMO CAROUSEL ============
+  let promoIndex = 0, promoInterval = null;
+  function renderPromoCarousel() {
+    const slides = [
+      { eyebrow: "Har din ki pooja, aasani se", title: "Fresh samagri,<br>delivered with care", sub: "Everything for your daily pooja, brought to your door.", cat: 'daily' },
+      { eyebrow: "Festival season", title: "Kits ready for<br>every occasion", sub: "Satyanarayan, Navratri, Diwali & more — all in one box.", cat: 'festival' },
+      { eyebrow: "Fresh, always", title: "Flowers & leaves,<br>picked daily", sub: "Marigold, tulsi, bael patra — fresh for your puja.", cat: 'flowers' },
+    ];
+    document.getElementById('promoTrack').innerHTML = slides.map(s => `
+      <div class="promo-slide" onclick="setCategory('${s.cat}')">
+        <div class="promo-slide-content">
+          <div class="promo-eyebrow">${s.eyebrow}</div>
+          <div class="promo-title">${s.title}</div>
+          <div class="promo-sub">${s.sub}</div>
+        </div>
+      </div>`).join('');
+    document.getElementById('promoDots').innerHTML = slides.map((_, i) => `<div class="promo-dot ${i === 0 ? 'active' : ''}" data-i="${i}"></div>`).join('');
+    if (promoInterval) clearInterval(promoInterval);
+    promoInterval = setInterval(() => goToPromo((promoIndex + 1) % slides.length), 4500);
+  }
+  function goToPromo(i) {
+    promoIndex = i;
+    document.getElementById('promoTrack').style.transform = `translateX(-${i * 100}%)`;
+    document.querySelectorAll('.promo-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+  }
 
   // ============ RENDER ============
   function renderChips() {
     const all = [{ id: 'all', name: 'All' }, ...categories];
     document.getElementById('chipRow').innerHTML = all.map(c => `
-      <div class="chip ${activeCategory === c.id ? 'active' : ''}" onclick="setCategory('${c.id}')">${c.imageUrl ? `<img src="${c.imageUrl}" class="chip-img">` : ''}${c.name}</div>
+      <div class="chip ${activeCategory === c.id ? 'active' : ''}" onclick="setCategory('${c.id}')">
+        <div class="chip-icon-box">${c.imageUrl ? `<img src="${c.imageUrl}">` : (c.id === 'all' ? ALL_ICON : PLACEHOLDER_ICON)}</div>
+        <div class="chip-label">${c.name}</div>
+      </div>
     `).join('');
   }
 
@@ -411,19 +588,20 @@
 
   function productCardHTML(p) {
     const qty = cart[p.id] ? cart[p.id].qty : 0;
+    const outOfStock = p.inStock === false;
     return `
-      <div class="product-card" data-id="${p.id}" data-cat="${p.catId}" data-name="${p.name.toLowerCase()}">
-        <div class="product-thumb">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : PLACEHOLDER_ICON}</div>
+      <div class="product-card ${outOfStock ? 'is-out-of-stock' : ''}" data-id="${p.id}" data-cat="${p.catId}" data-name="${p.name.toLowerCase()}">
+        <div class="product-thumb-wrap">
+          <div class="product-thumb">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : PLACEHOLDER_ICON}</div>
+          ${outOfStock ? '' : (qty === 0
+            ? `<button class="qty-fab" onclick="changeQty('${p.id}', 1)">+</button>`
+            : `<div class="qty-fab-stepper"><button onclick="changeQty('${p.id}', -1)">−</button><span>${qty}</span><button onclick="changeQty('${p.id}', 1)">+</button></div>`
+          )}
+        </div>
         <div class="product-info">
           <div class="product-name">${p.name}</div>
           <div class="product-unit">${p.unit || ''}</div>
-          <div class="product-price">₹${p.price}</div>
-        </div>
-        <div class="product-action">
-          ${qty === 0
-            ? `<button class="add-btn" onclick="changeQty('${p.id}', 1)">ADD</button>`
-            : `<div class="qty-stepper"><button onclick="changeQty('${p.id}', -1)">−</button><span>${qty}</span><button onclick="changeQty('${p.id}', 1)">+</button></div>`
-          }
+          ${outOfStock ? `<div class="out-of-stock-tag">Out of stock</div>` : `<div class="product-price">₹${p.price}</div>`}
         </div>
       </div>`;
   }
@@ -483,19 +661,34 @@
 
   function changeQty(id, delta) {
     const product = findProduct(id);
+    if (product && product.inStock === false) return;
     if (!cart[id]) cart[id] = { product, qty: 0 };
     cart[id].qty += delta;
     if (cart[id].qty <= 0) delete cart[id];
     renderFeed();
     updateCartBadge();
     if (document.getElementById('panel-cart').classList.contains('open')) renderCart();
+    const searchInput = document.getElementById('searchPanelInput');
+    if (document.getElementById('panel-search').classList.contains('open') && searchInput.value.trim()) {
+      renderSearchResults(searchInput.value.trim());
+    }
   }
-
   function updateCartBadge() {
-    const totalQty = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
+    const items = Object.values(cart);
+    const totalQty = items.reduce((sum, item) => sum + item.qty, 0);
     const badge = document.getElementById('cartBadge');
     badge.textContent = totalQty;
     badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
+
+    const bar = document.getElementById('floatingCartBar');
+    if (totalQty > 0) {
+      const total = items.reduce((sum, i) => sum + i.product.price * i.qty, 0);
+      document.getElementById('floatingCartCount').textContent = `${totalQty} item${totalQty > 1 ? 's' : ''}`;
+      document.getElementById('floatingCartAmount').textContent = `₹${total}`;
+      bar.style.display = 'flex';
+    } else {
+      bar.style.display = 'none';
+    }
   }
 
   function renderCart() {
@@ -548,9 +741,10 @@
     const btn = document.getElementById('placeOrderBtn');
     btn.disabled = true; btn.textContent = 'Placing order…';
 
-    const itemTotal = items.reduce((sum, i) => sum + i.product.price * i.qty, 0);
+        const itemTotal = items.reduce((sum, i) => sum + i.product.price * i.qty, 0);
     const deliveryFee = 25;
     const orderId = 'PN' + Math.floor(10000 + Math.random() * 89999);
+    const deliveryDate = getDeliveryDate();
 
     const orderData = {
       orderId,
@@ -559,6 +753,7 @@
       customerName: name, phone, address,
       paymentMode: payMode, utr: utr || null,
       status: 'placed', notes: '',
+      deliveryDate: deliveryDate.toISOString(),
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
 
@@ -567,7 +762,8 @@
       saveOrderId(orderId);
       initMiniOrderBar();
       document.getElementById('orderIdText').textContent = '#' + orderId;
-      renderStatusTrack('confirmStatusTrack', 'placed');
+      document.getElementById('confirmDeliveryLine').textContent = `🚚 Estimated delivery: ${formatDeliveryDate(deliveryDate)}`;
+      renderStatusTrack('confirmStatusTrack', 'placed');  
       cart = {};
       updateCartBadge();
       closePanel('checkout');
@@ -629,10 +825,18 @@
 
   // ============ PANEL NAV ============
     function openPanel(id) {
-    if (id === 'cart') renderCart();
-    if (id === 'orders') renderOrdersPanel();
-    document.getElementById('panel-' + id).classList.add('open');
+  if (id === 'cart') renderCart();
+  if (id === 'orders') renderOrdersPanel();
+  if (id === 'checkout') renderDeliveryEstimate();
+  if (id === 'search') {
+    document.getElementById('searchPanelInput').value = '';
+    document.getElementById('searchResultsGrid').innerHTML = '';
+    document.getElementById('searchEmptyState').innerHTML = '';
+    renderRecentSearches();
+    setTimeout(() => document.getElementById('searchPanelInput').focus(), 400);
   }
+  document.getElementById('panel-' + id).classList.add('open');
+}
   function closePanel(id) { document.getElementById('panel-' + id).classList.remove('open'); }
   function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
   function focusSearch() { scrollToTop(); setTimeout(() => document.getElementById('searchInput').focus(), 350); }
@@ -640,6 +844,13 @@
   window.addEventListener('scroll', () => {
     document.getElementById('stickyControls').classList.toggle('scrolled', window.scrollY > 40);
   });
+
+  document.getElementById('promoDots').addEventListener('click', (e) => {
+    const dot = e.target.closest('.promo-dot');
+    if (dot) goToPromo(parseInt(dot.dataset.i, 10));
+  });
+
+  renderPromoCarousel();
   initMiniOrderBar();
 </script>
 
