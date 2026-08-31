@@ -294,6 +294,63 @@
       .feed {
         padding: 4px 18px 8px;
       }
+      .install-banner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--cream-card);
+        border: 1.5px solid var(--gold);
+        border-radius: 16px;
+        padding: 14px;
+        margin: 4px 0 16px;
+      }
+      .install-banner-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--marigold), var(--saffron));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .install-banner-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .install-banner-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--maroon-deep);
+      }
+      .install-banner-sub {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .install-banner-btn {
+        background: linear-gradient(
+          135deg,
+          var(--marigold),
+          var(--saffron-dark)
+        );
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .install-banner-close {
+        font-size: 18px;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 2px 6px;
+        flex-shrink: 0;
+      }
 
       .promo-carousel {
         position: relative;
@@ -1308,6 +1365,7 @@
     </div>
 
     <div class="feed">
+      <div id="installBanner"></div>
       <div class="promo-carousel" id="promoCarousel">
         <div class="promo-track" id="promoTrack"></div>
         <div class="promo-dots" id="promoDots"></div>
@@ -2404,6 +2462,71 @@
         const dot = e.target.closest(".promo-dot");
         if (dot) goToPromo(parseInt(dot.dataset.i, 10));
       });
+
+      // ============ INSTALL PROMPT ============
+      let deferredInstallPrompt = null;
+      const INSTALL_DISMISS_KEY = "poojanow_install_dismissed";
+
+      function isIOS() {
+        return (
+          /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream
+        );
+      }
+      function isStandalone() {
+        return (
+          window.matchMedia("(display-mode: standalone)").matches ||
+          window.navigator.standalone === true
+        );
+      }
+
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        showInstallBanner("android");
+      });
+
+      function showInstallBanner(type) {
+        if (localStorage.getItem(INSTALL_DISMISS_KEY) === "1") return;
+        if (isStandalone()) return;
+        const el = document.getElementById("installBanner");
+        if (type === "android") {
+          el.innerHTML = `
+      <div class="install-banner">
+        <div class="install-banner-icon">🪔</div>
+        <div class="install-banner-text">
+          <div class="install-banner-title">Add PoojaNow to your Home Screen</div>
+          <div class="install-banner-sub">Quick access, just like an app</div>
+        </div>
+        <button class="install-banner-btn" onclick="triggerInstall()">Install</button>
+        <div class="install-banner-close" onclick="dismissInstallBanner()">✕</div>
+      </div>`;
+        } else {
+          el.innerHTML = `
+      <div class="install-banner">
+        <div class="install-banner-icon">🪔</div>
+        <div class="install-banner-text">
+          <div class="install-banner-title">Add PoojaNow to your Home Screen</div>
+          <div class="install-banner-sub">Tap Share, then "Add to Home Screen"</div>
+        </div>
+        <div class="install-banner-close" onclick="dismissInstallBanner()">✕</div>
+      </div>`;
+        }
+      }
+
+      async function triggerInstall() {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        dismissInstallBanner();
+      }
+
+      function dismissInstallBanner() {
+        localStorage.setItem(INSTALL_DISMISS_KEY, "1");
+        document.getElementById("installBanner").innerHTML = "";
+      }
+
+      if (isIOS() && !isStandalone()) showInstallBanner("ios");
 
       renderPromoCarousel();
       initMiniOrderBar();
