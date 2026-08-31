@@ -1,269 +1,922 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PoojaNow Admin</title>
-<meta name="robots" content="noindex, nofollow">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --saffron: #E8871E; --saffron-dark: #C96A0F; --marigold: #F2A93C;
-    --maroon: #8B2635; --maroon-deep: #6B1420; --gold: #C9973E; --gold-light: #F0D9A8;
-    --ivory: #FFF9F1; --ivory-warm: #FDEFDD; --cream-card: #FFFFFF;
-    --charcoal: #3D2817; --muted: #9C8570; --line: #F0E1C8;
-    --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Poppins',sans-serif; background: var(--ivory); color: var(--charcoal); min-height:100vh; }
-  h1,h2,h3 { font-family:'Cormorant Garamond', serif; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PoojaNow Admin</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --saffron: #e8871e;
+        --saffron-dark: #c96a0f;
+        --marigold: #f2a93c;
+        --maroon: #8b2635;
+        --maroon-deep: #6b1420;
+        --gold: #c9973e;
+        --gold-light: #f0d9a8;
+        --ivory: #fff9f1;
+        --ivory-warm: #fdefdd;
+        --cream-card: #ffffff;
+        --charcoal: #3d2817;
+        --muted: #9c8570;
+        --line: #f0e1c8;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        background: var(--ivory);
+        color: var(--charcoal);
+        min-height: 100vh;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Cormorant Garamond", serif;
+      }
 
-  /* ---- Login ---- */
-  #loginScreen { max-width: 380px; margin: 90px auto; padding: 30px; background:var(--cream-card); border-radius:20px; border:1px solid var(--line); box-shadow:0 10px 30px rgba(139,38,53,0.08); }
-  #loginScreen h1 { color: var(--maroon); font-size:26px; margin-bottom:4px; }
-  #loginScreen p { font-size:12.5px; color:var(--muted); margin-bottom:20px; }
-  .form-group { margin-bottom: 14px; }
-  .form-group label { font-size:12px; font-weight:600; color: var(--maroon-deep); display:block; margin-bottom:6px; }
-  .form-group input, .form-group textarea, .form-group select {
-    width:100%; padding: 11px 13px; border-radius: 10px; border: 1.5px solid var(--line);
-    font-family:'Poppins',sans-serif; font-size: 13.5px; background: var(--ivory);
-  }
-  .form-group input:focus, .form-group textarea:focus { outline:none; border-color: var(--gold); }
-  .btn {
-    background: linear-gradient(135deg, var(--marigold), var(--saffron-dark)); color:white; border:none;
-    padding: 12px 20px; border-radius: 10px; font-weight:600; font-size:13.5px; cursor:pointer;
-    font-family:'Poppins',sans-serif; transition: transform 0.15s var(--ease);
-  }
-  .btn:active { transform: scale(0.96); }
-  .btn.secondary { background: var(--ivory-warm); color: var(--maroon-deep); border:1px solid var(--line); }
-  .btn.danger { background: #C0392B; }
-  .btn.small { padding: 7px 12px; font-size:11.5px; }
-  #loginError { color:#C0392B; font-size:12px; margin-top:8px; display:none; }
+      /* ---- Login ---- */
+      #loginScreen {
+        max-width: 380px;
+        margin: 90px auto;
+        padding: 30px;
+        background: var(--cream-card);
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        box-shadow: 0 10px 30px rgba(139, 38, 53, 0.08);
+      }
+      #loginScreen h1 {
+        color: var(--maroon);
+        font-size: 26px;
+        margin-bottom: 4px;
+      }
+      #loginScreen p {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin-bottom: 20px;
+      }
+      .form-group {
+        margin-bottom: 14px;
+      }
+      .form-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--maroon-deep);
+        display: block;
+        margin-bottom: 6px;
+      }
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 11px 13px;
+        border-radius: 10px;
+        border: 1.5px solid var(--line);
+        font-family: "Poppins", sans-serif;
+        font-size: 13.5px;
+        background: var(--ivory);
+      }
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: var(--gold);
+      }
+      .btn {
+        background: linear-gradient(
+          135deg,
+          var(--marigold),
+          var(--saffron-dark)
+        );
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 13.5px;
+        cursor: pointer;
+        font-family: "Poppins", sans-serif;
+        transition: transform 0.15s var(--ease);
+      }
+      .btn:active {
+        transform: scale(0.96);
+      }
+      .btn.secondary {
+        background: var(--ivory-warm);
+        color: var(--maroon-deep);
+        border: 1px solid var(--line);
+      }
+      .btn.danger {
+        background: #c0392b;
+      }
+      .btn.small {
+        padding: 7px 12px;
+        font-size: 11.5px;
+      }
+      #loginError {
+        color: #c0392b;
+        font-size: 12px;
+        margin-top: 8px;
+        display: none;
+      }
 
-  /* ---- Dashboard shell ---- */
-  #dashboard { display:none; }
-  .topbar { background: var(--cream-card); border-bottom:1px solid var(--line); padding: 14px 22px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:20; }
-  .topbar h1 { color: var(--maroon); font-size:24px; }
-  .tabs { display:flex; gap:8px; padding: 16px 22px 0; }
-  .tab { padding: 9px 18px; border-radius: 10px 10px 0 0; font-size:13px; font-weight:600; cursor:pointer; color:var(--muted); background:var(--ivory-warm); }
-  .tab.active { background: var(--cream-card); color: var(--maroon-deep); }
-  .tab-content { display:none; padding: 18px 22px 60px; max-width: 900px; margin:0 auto; }
-  .tab-content.active { display:block; }
+      /* ---- Dashboard shell ---- */
+      #dashboard {
+        display: none;
+      }
+      .topbar {
+        background: var(--cream-card);
+        border-bottom: 1px solid var(--line);
+        padding: 14px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+      .topbar h1 {
+        color: var(--maroon);
+        font-size: 24px;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        padding: 16px 22px 0;
+      }
+      .tab {
+        padding: 9px 18px;
+        border-radius: 10px 10px 0 0;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--muted);
+        background: var(--ivory-warm);
+      }
+      .tab.active {
+        background: var(--cream-card);
+        color: var(--maroon-deep);
+      }
+      .tab-content {
+        display: none;
+        padding: 18px 22px 60px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .tab-content.active {
+        display: block;
+      }
 
-  /* ---- Orders ---- */
-  .order-card { background: var(--cream-card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:14px; }
-  .order-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
-  .order-id { font-weight:700; color: var(--maroon-deep); font-size:15px; }
-  .order-time { font-size:11px; color:var(--muted); }
-  .status-pill { display:inline-block; padding: 4px 12px; border-radius:20px; font-size:11px; font-weight:600; }
-  .status-pill.placed { background:#FDEFDD; color:#C96A0F; }
-  .status-pill.packed { background:#E7F0D8; color:#5A7A2A; }
-  .status-pill.out_for_delivery { background:#DCEBF7; color:#2A6A9A; }
-  .status-pill.delivered { background:#DCF3E3; color:#2A7A4A; }
-  .order-detail-row { font-size:12.5px; color:var(--charcoal); margin-bottom:3px; }
-  .order-detail-row b { color:var(--maroon-deep); }
-  .order-items { margin: 10px 0; padding: 10px 12px; background:var(--ivory-warm); border-radius:10px; font-size:12.5px; }
-  .order-items div { padding: 2px 0; }
-  .order-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
-  .notes-row { margin-top:10px; display:flex; gap:8px; }
-  .notes-row input { flex:1; }
+      /* ---- Orders ---- */
+      .order-card {
+        background: var(--cream-card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      .order-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .order-id {
+        font-weight: 700;
+        color: var(--maroon-deep);
+        font-size: 15px;
+      }
+      .order-time {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .status-pill {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .status-pill.placed {
+        background: #fdefdd;
+        color: #c96a0f;
+      }
+      .status-pill.packed {
+        background: #e7f0d8;
+        color: #5a7a2a;
+      }
+      .status-pill.out_for_delivery {
+        background: #dcebf7;
+        color: #2a6a9a;
+      }
+      .status-pill.delivered {
+        background: #dcf3e3;
+        color: #2a7a4a;
+      }
+      .order-detail-row {
+        font-size: 12.5px;
+        color: var(--charcoal);
+        margin-bottom: 3px;
+      }
+      .order-detail-row b {
+        color: var(--maroon-deep);
+      }
+      .order-items {
+        margin: 10px 0;
+        padding: 10px 12px;
+        background: var(--ivory-warm);
+        border-radius: 10px;
+        font-size: 12.5px;
+      }
+      .order-items div {
+        padding: 2px 0;
+      }
+      .order-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .notes-row {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+      }
+      .notes-row input {
+        flex: 1;
+      }
 
-  /* ---- Catalog ---- */
-  .cat-block { background: var(--cream-card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; }
-  .cat-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-  .cat-header h3 { color:var(--maroon-deep); font-size:17px; }
-  .prod-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; }
-  .prod-row:last-child { border-bottom:none; }
-  .prod-actions { display:flex; gap:6px; }
-  .inline-form { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-  .inline-form input { flex:1; min-width:80px; padding: 8px 10px; border-radius:8px; border:1.5px solid var(--line); font-size:12.5px; }
-  .top-actions { display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
-  .empty-note { color:var(--muted); font-size:13px; text-align:center; padding: 30px; }
+      /* ---- Catalog ---- */
+      .cat-block {
+        background: var(--cream-card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .cat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .cat-header h3 {
+        color: var(--maroon-deep);
+        font-size: 17px;
+      }
+      .prod-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+      }
+      .prod-row:last-child {
+        border-bottom: none;
+      }
+      .prod-actions {
+        display: flex;
+        gap: 6px;
+      }
+      .inline-form {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .inline-form input {
+        flex: 1;
+        min-width: 80px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1.5px solid var(--line);
+        font-size: 12.5px;
+      }
+      .top-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .empty-note {
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
+        padding: 30px;
+      }
 
-  /* ---- Edit item modal ---- */
-  .modal-overlay {
-    position:fixed; inset:0; background:rgba(61,40,23,0.45);
-    display:none; align-items:center; justify-content:center; z-index:200; padding:20px;
-  }
-  .modal-overlay.open { display:flex; }
-  .modal-box {
-    background: var(--cream-card); border-radius:18px; padding:24px;
-    width:100%; max-width:380px; box-shadow: 0 20px 50px rgba(139,38,53,0.2);
-  }
-  .modal-box h3 { color: var(--maroon-deep); font-size:19px; margin-bottom:16px; }
-  .modal-actions { display:flex; gap:10px; margin-top:18px; }
-  .modal-actions .btn { flex:1; }
-  .modal-img-preview { width:100%; max-width:160px; height:120px; object-fit:cover; border-radius:10px; margin-bottom:8px; display:block; border:1px solid var(--line); }
+      /* ---- Edit item modal ---- */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(61, 40, 23, 0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 200;
+        padding: 20px;
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+      .modal-box {
+        background: var(--cream-card);
+        border-radius: 18px;
+        padding: 24px;
+        width: 100%;
+        max-width: 380px;
+        box-shadow: 0 20px 50px rgba(139, 38, 53, 0.2);
+      }
+      .modal-box h3 {
+        color: var(--maroon-deep);
+        font-size: 19px;
+        margin-bottom: 16px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .modal-actions .btn {
+        flex: 1;
+      }
+      .modal-img-preview {
+        width: 100%;
+        max-width: 160px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        display: block;
+        border: 1px solid var(--line);
+      }
 
-  /* ---- Thumbnails (real images, no emoji) ---- */
-  .thumb-img { width:36px; height:36px; object-fit:cover; border-radius:8px; flex-shrink:0; border:1px solid var(--line); }
-  .thumb-placeholder {
-    width:36px; height:36px; border-radius:8px; flex-shrink:0; border:1px dashed var(--line);
-    background: var(--ivory-warm); display:flex; align-items:center; justify-content:center;
-  }
-  .thumb-placeholder svg { width:16px; height:16px; opacity:0.5; }
-  .prod-row { align-items:center; }
-  .prod-row-main { display:flex; align-items:center; gap:10px; }
-  .cat-header-main { display:flex; align-items:center; gap:10px; }
-</style>
-</head>
-<body>
+      /* ---- Thumbnails (real images, no emoji) ---- */
+      .thumb-img {
+        width: 36px;
+        height: 36px;
+        object-fit: cover;
+        border-radius: 8px;
+        flex-shrink: 0;
+        border: 1px solid var(--line);
+      }
+      .thumb-placeholder {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        flex-shrink: 0;
+        border: 1px dashed var(--line);
+        background: var(--ivory-warm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .thumb-placeholder svg {
+        width: 16px;
+        height: 16px;
+        opacity: 0.5;
+      }
+      .prod-row-main {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .cat-header-main {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-  <!-- LOGIN -->
-  <div id="loginScreen">
-    <h1>🪔 PoojaNow Admin</h1>
-    <p>Sign in with your admin account to manage orders and catalog.</p>
-    <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
-    <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
-    <button class="btn" style="width:100%;" onclick="doLogin()">Log in</button>
-    <div id="loginError"></div>
-  </div>
+      /* ---- Category grid (drill-down navigation) ---- */
+      .cat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 14px;
+      }
+      .cat-card {
+        background: var(--cream-card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        cursor: pointer;
+        transition:
+          transform 0.15s var(--ease),
+          box-shadow 0.15s var(--ease);
+      }
+      .cat-card:active {
+        transform: scale(0.96);
+      }
+      .cat-card:hover {
+        box-shadow: 0 8px 20px rgba(139, 38, 53, 0.1);
+      }
+      .cat-card-thumb {
+        width: 100%;
+        aspect-ratio: 1/0.85;
+        background: var(--ivory-warm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .cat-card-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .cat-card-thumb svg {
+        width: 32px;
+        height: 32px;
+        opacity: 0.4;
+      }
+      .cat-card-info {
+        padding: 12px;
+      }
+      .cat-card-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--maroon-deep);
+      }
+      .cat-card-count {
+        font-size: 11.5px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .cat-card-add {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 150px;
+        border: 1.5px dashed var(--gold);
+        background: var(--ivory-warm);
+      }
+      .cat-card-add-icon {
+        font-size: 30px;
+        color: var(--saffron-dark);
+        font-weight: 300;
+        line-height: 1;
+      }
+      .cat-card-add .cat-card-name {
+        margin-top: 6px;
+        color: var(--saffron-dark);
+      }
 
-  <!-- DASHBOARD -->
-  <div id="dashboard">
-    <div class="topbar">
+      /* ---- Category detail (drill-down view) ---- */
+      .cat-detail-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .cat-detail-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .cat-detail-title h3 {
+        color: var(--maroon-deep);
+        font-size: 19px;
+      }
+
+      /* ---- Product cards (inside category detail) ---- */
+      .prod-card-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .prod-card {
+        background: var(--cream-card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .prod-card-thumb {
+        width: 52px;
+        height: 52px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        overflow: hidden;
+        background: var(--ivory-warm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .prod-card-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .prod-card-thumb svg {
+        width: 22px;
+        height: 22px;
+        opacity: 0.5;
+      }
+      .prod-card-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .prod-card-name {
+        font-size: 13.5px;
+        font-weight: 600;
+      }
+      .prod-card-meta {
+        font-size: 11.5px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .prod-card-tags {
+        margin-top: 4px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .prod-tag {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 6px;
+      }
+      .prod-tag.hidden-tag {
+        background: #fdeaea;
+        color: #c0392b;
+      }
+      .prod-tag.oos-tag {
+        background: #fdefdd;
+        color: #c96a0f;
+      }
+      .prod-card-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      .prod-card-actions .btn {
+        white-space: nowrap;
+      }
+      .add-item-card {
+        background: var(--ivory-warm);
+        border: 1.5px dashed var(--gold);
+        border-radius: 14px;
+        padding: 16px;
+      }
+      .add-item-card h4 {
+        color: var(--maroon-deep);
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+
+      /* ---- Image upload: camera + gallery buttons ---- */
+      .image-upload-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
+      .upload-btn {
+        background: var(--cream-card);
+        border: 1.5px solid var(--line);
+        color: var(--maroon-deep);
+        padding: 8px 14px;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: "Poppins", sans-serif;
+      }
+      .upload-btn.secondary {
+        background: var(--ivory-warm);
+      }
+      .upload-filename {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN -->
+    <div id="loginScreen">
       <h1>🪔 PoojaNow Admin</h1>
-      <button class="btn secondary small" onclick="doLogout()">Log out</button>
-    </div>
-    <div class="tabs">
-      <div class="tab active" id="tabOrdersBtn" onclick="switchTab('orders')">Orders</div>
-      <div class="tab" id="tabCatalogBtn" onclick="switchTab('catalog')">Catalog</div>
-    </div>
-
-    <div class="tab-content active" id="tabOrders">
-      <div id="ordersList"><div class="empty-note">Loading orders…</div></div>
-    </div>
-
-    <div class="tab-content" id="tabCatalog">
-      <div class="top-actions">
-        <button class="btn" onclick="seedSampleCatalog()">Seed sample catalog (38 items)</button>
-        <button class="btn secondary" onclick="showAddCategoryForm()">+ Add category</button>
-      </div>
-      <div id="addCategoryFormWrap"></div>
-      <div id="catalogList"><div class="empty-note">Loading catalog…</div></div>
-    </div>
-  </div>
-
-  <!-- EDIT ITEM MODAL -->
-  <div class="modal-overlay" id="editModal">
-    <div class="modal-box">
-      <h3>Edit item</h3>
-      <div class="form-group"><label>Item name</label><input type="text" id="editName"></div>
-      <div class="form-group"><label>Unit</label><input type="text" id="editUnit"></div>
-      <div class="form-group"><label>Price (₹)</label><input type="number" id="editPrice"></div>
+      <p>Sign in with your admin account to manage orders and catalog.</p>
       <div class="form-group">
-        <label>Photo</label>
-        <img id="editImagePreview" class="modal-img-preview" style="display:none;">
-        <input type="file" accept="image/*" id="editImageFile">
+        <label>Email</label
+        ><input type="email" id="loginEmail" placeholder="you@example.com" />
       </div>
-      <div class="modal-actions">
-        <button class="btn secondary" onclick="closeEditModal()">Cancel</button>
-        <button class="btn" onclick="saveEditModal()" id="editSaveBtn">Save changes</button>
+      <div class="form-group">
+        <label>Password</label
+        ><input type="password" id="loginPassword" placeholder="••••••••" />
+      </div>
+      <button class="btn" style="width: 100%" onclick="doLogin()">
+        Log in
+      </button>
+      <div id="loginError"></div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard">
+      <div class="topbar">
+        <h1>🪔 PoojaNow Admin</h1>
+        <button class="btn secondary small" onclick="doLogout()">
+          Log out
+        </button>
+      </div>
+      <div class="tabs">
+        <div class="tab active" id="tabOrdersBtn" onclick="switchTab('orders')">
+          Orders
+        </div>
+        <div class="tab" id="tabCatalogBtn" onclick="switchTab('catalog')">
+          Catalog
+        </div>
+      </div>
+
+      <div class="tab-content active" id="tabOrders">
+        <div id="ordersList"><div class="empty-note">Loading orders…</div></div>
+      </div>
+
+      <div class="tab-content" id="tabCatalog">
+        <div class="top-actions">
+          <button class="btn" onclick="seedSampleCatalog()">
+            Seed sample catalog (38 items)
+          </button>
+        </div>
+        <div id="catalogList">
+          <div class="empty-note">Loading catalog…</div>
+        </div>
       </div>
     </div>
-  </div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-<script src="firebase-config.js"></script>
+    <!-- ADD CATEGORY MODAL -->
+    <div class="modal-overlay" id="addCategoryModal">
+      <div class="modal-box">
+        <h3>Add category</h3>
+        <div class="form-group">
+          <label>Category name</label><input type="text" id="newCatName" />
+        </div>
+        <div class="form-group">
+          <label>Photo</label>
+          <div class="image-upload-row">
+            <button
+              type="button"
+              class="upload-btn"
+              onclick="triggerFileInput('newCatImage', true)"
+            >
+              📷 Take Photo
+            </button>
+            <button
+              type="button"
+              class="upload-btn secondary"
+              onclick="triggerFileInput('newCatImage', false)"
+            >
+              🖼 Gallery
+            </button>
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            id="newCatImage"
+            style="display: none"
+            onchange="updateFileLabel('newCatImage')"
+          />
+          <div class="upload-filename" id="newCatImage-label"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn secondary" onclick="closeAddCategoryModal()">
+            Cancel
+          </button>
+          <button class="btn" onclick="addCategory()">Save category</button>
+        </div>
+      </div>
+    </div>
 
-<script>
-  const STATUS_FLOW = ['placed', 'packed', 'out_for_delivery', 'delivered'];
-  const STATUS_LABELS = { placed: 'Placed', packed: 'Packed', out_for_delivery: 'Out for delivery', delivered: 'Delivered' };
-  const CLOUDINARY_CLOUD_NAME = 'uyvay5lw';
-  const CLOUDINARY_UPLOAD_PRESET = 'poojanow';
+    <!-- EDIT ITEM MODAL -->
+    <div class="modal-overlay" id="editModal">
+      <div class="modal-box">
+        <h3>Edit item</h3>
+        <div class="form-group">
+          <label>Item name</label><input type="text" id="editName" />
+        </div>
+        <div class="form-group">
+          <label>Unit</label><input type="text" id="editUnit" />
+        </div>
+        <div class="form-group">
+          <label>Price (₹)</label><input type="number" id="editPrice" />
+        </div>
+        <div class="form-group">
+          <label>Photo</label>
+          <img
+            id="editImagePreview"
+            class="modal-img-preview"
+            style="display: none"
+          />
+          <div class="image-upload-row">
+            <button
+              type="button"
+              class="upload-btn"
+              onclick="triggerFileInput('editImageFile', true)"
+            >
+              📷 Take Photo
+            </button>
+            <button
+              type="button"
+              class="upload-btn secondary"
+              onclick="triggerFileInput('editImageFile', false)"
+            >
+              🖼 Gallery
+            </button>
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            id="editImageFile"
+            style="display: none"
+            onchange="updateFileLabel('editImageFile')"
+          />
+          <div class="upload-filename" id="editImageFile-label"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn secondary" onclick="closeEditModal()">
+            Cancel
+          </button>
+          <button class="btn" onclick="saveEditModal()" id="editSaveBtn">
+            Save changes
+          </button>
+        </div>
+      </div>
+    </div>
 
-  const PLACEHOLDER_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="#8B2635" stroke-width="1.5"><path d="M12 2 L12 6 M8 10 C8 6 16 6 16 10 C16 14 8 14 8 18 L16 18" stroke-linecap="round"/></svg>`;
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
 
-  function thumbHTML(imageUrl, name, size) {
-    size = size || 36;
-    if (imageUrl) return `<img src="${imageUrl}" alt="${name || ''}" class="thumb-img" style="width:${size}px; height:${size}px;">`;
-    return `<div class="thumb-placeholder" style="width:${size}px; height:${size}px;">${PLACEHOLDER_ICON}</div>`;
-  }
+    <script>
+      const STATUS_FLOW = ["placed", "packed", "out_for_delivery", "delivered"];
+      const STATUS_LABELS = {
+        placed: "Placed",
+        packed: "Packed",
+        out_for_delivery: "Out for delivery",
+        delivered: "Delivered",
+      };
+      const CLOUDINARY_CLOUD_NAME = "uyvay5lw";
+      const CLOUDINARY_UPLOAD_PRESET = "poojanow";
 
-  async function uploadImageIfSelected(fileInputEl, pathPrefix) {
-    const file = fileInputEl.files[0];
-    if (!file) return null;
+      const PLACEHOLDER_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="#8B2635" stroke-width="1.5"><path d="M12 2 L12 6 M8 10 C8 6 16 6 16 10 C16 14 8 14 8 18 L16 18" stroke-linecap="round"/></svg>`;
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('folder', `poojanow/${pathPrefix}`);
+      function thumbHTML(imageUrl, name, size) {
+        size = size || 36;
+        if (imageUrl)
+          return `<img src="${imageUrl}" alt="${name || ""}" class="thumb-img" style="width:${size}px; height:${size}px;">`;
+        return `<div class="thumb-placeholder" style="width:${size}px; height:${size}px;">${PLACEHOLDER_ICON}</div>`;
+      }
 
-    const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-      { method: 'POST', body: formData }
-    );
-    const data = await res.json();
-    if (!data.secure_url) {
-      console.error('Cloudinary upload failed:', data);
-      throw new Error('Image upload failed');
-    }
-    return data.secure_url;
-  }
+      async function uploadImageIfSelected(fileInputEl, pathPrefix) {
+        const file = fileInputEl.files[0];
+        if (!file) return null;
 
-  let categories = [];
-  let products = [];
-  let ordersUnsub = null, catUnsub = null, prodUnsub = null;
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        formData.append("folder", `poojanow/${pathPrefix}`);
 
-  // ============ AUTH ============
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('dashboard').style.display = 'block';
-      startListeners();
-    } else {
-      document.getElementById('loginScreen').style.display = 'block';
-      document.getElementById('dashboard').style.display = 'none';
-      if (ordersUnsub) ordersUnsub();
-      if (catUnsub) catUnsub();
-      if (prodUnsub) prodUnsub();
-    }
-  });
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+          { method: "POST", body: formData },
+        );
+        const data = await res.json();
+        if (!data.secure_url) {
+          console.error("Cloudinary upload failed:", data);
+          throw new Error("Image upload failed");
+        }
+        return data.secure_url;
+      }
 
-  function doLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    const errBox = document.getElementById('loginError');
-    errBox.style.display = 'none';
-    auth.signInWithEmailAndPassword(email, password).catch(err => {
-      errBox.textContent = 'Login failed: ' + err.message;
-      errBox.style.display = 'block';
-    });
-  }
-  function doLogout() { auth.signOut(); }
+      function triggerFileInput(inputId, useCamera) {
+        const input = document.getElementById(inputId);
+        if (useCamera) input.setAttribute("capture", "environment");
+        else input.removeAttribute("capture");
+        input.value = "";
+        input.click();
+      }
 
-  function switchTab(name) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1) + 'Btn').classList.add('active');
-    document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
-  }
+      function updateFileLabel(inputId) {
+        const input = document.getElementById(inputId);
+        const label = document.getElementById(inputId + "-label");
+        if (label)
+          label.textContent = input.files[0] ? `✓ ${input.files[0].name}` : "";
+      }
 
-  function startListeners() {
-    ordersUnsub = db.collection('orders').orderBy('createdAt', 'desc').onSnapshot(renderOrders, err => console.error(err));
-    catUnsub = db.collection('categories').orderBy('order').onSnapshot(snap => {
-      categories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderCatalog();
-    }, err => console.error(err));
-    prodUnsub = db.collection('products').onSnapshot(snap => {
-      products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderCatalog();
-    }, err => console.error(err));
-  }
+      let categories = [];
+      let products = [];
+      let activeCatId = null;
+      let ordersUnsub = null,
+        catUnsub = null,
+        prodUnsub = null;
+      // ============ AUTH ============
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          document.getElementById("loginScreen").style.display = "none";
+          document.getElementById("dashboard").style.display = "block";
+          startListeners();
+        } else {
+          document.getElementById("loginScreen").style.display = "block";
+          document.getElementById("dashboard").style.display = "none";
+          if (ordersUnsub) ordersUnsub();
+          if (catUnsub) catUnsub();
+          if (prodUnsub) prodUnsub();
+        }
+      });
 
-  // ============ ORDERS ============
-  function renderOrders(snap) {
-    const list = document.getElementById('ordersList');
-    if (snap.empty) { list.innerHTML = `<div class="empty-note">No orders yet. They'll show up here the moment a customer checks out.</div>`; return; }
-    list.innerHTML = snap.docs.map(doc => {
-      const o = doc.data();
-      const time = o.createdAt ? o.createdAt.toDate().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
-      const currentIdx = STATUS_FLOW.indexOf(o.status);
-      const nextStatus = STATUS_FLOW[currentIdx + 1];
-      return `
+      function doLogin() {
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        const errBox = document.getElementById("loginError");
+        errBox.style.display = "none";
+        auth.signInWithEmailAndPassword(email, password).catch((err) => {
+          errBox.textContent = "Login failed: " + err.message;
+          errBox.style.display = "block";
+        });
+      }
+      function doLogout() {
+        auth.signOut();
+      }
+
+      function switchTab(name) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .getElementById(
+            "tab" + name.charAt(0).toUpperCase() + name.slice(1) + "Btn",
+          )
+          .classList.add("active");
+        document
+          .getElementById("tab" + name.charAt(0).toUpperCase() + name.slice(1))
+          .classList.add("active");
+      }
+
+      function startListeners() {
+        ordersUnsub = db
+          .collection("orders")
+          .orderBy("createdAt", "desc")
+          .onSnapshot(renderOrders, (err) => console.error(err));
+        catUnsub = db
+          .collection("categories")
+          .orderBy("order")
+          .onSnapshot(
+            (snap) => {
+              categories = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+              renderCatalog();
+            },
+            (err) => console.error(err),
+          );
+        prodUnsub = db.collection("products").onSnapshot(
+          (snap) => {
+            products = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            renderCatalog();
+          },
+          (err) => console.error(err),
+        );
+      }
+
+      // ============ ORDERS ============
+      function renderOrders(snap) {
+        const list = document.getElementById("ordersList");
+        if (snap.empty) {
+          list.innerHTML = `<div class="empty-note">No orders yet. They'll show up here the moment a customer checks out.</div>`;
+          return;
+        }
+        list.innerHTML = snap.docs
+          .map((doc) => {
+            const o = doc.data();
+            const time = o.createdAt
+              ? o.createdAt.toDate().toLocaleString("en-IN", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })
+              : "—";
+            const currentIdx = STATUS_FLOW.indexOf(o.status);
+            const nextStatus = STATUS_FLOW[currentIdx + 1];
+            return `
         <div class="order-card">
           <div class="order-top">
             <div><div class="order-id">#${o.orderId}</div><div class="order-time">${time}</div></div>
@@ -271,210 +924,326 @@
           </div>
           <div class="order-detail-row"><b>${o.customerName}</b> · ${o.phone}</div>
           <div class="order-detail-row">${o.address}</div>
-          ${o.location ? `<div class="order-detail-row"><a href="https://www.google.com/maps?q=${o.location.lat},${o.location.lng}" target="_blank" style="color:var(--saffron-dark);">📍 Open exact location in Google Maps</a></div>` : ''}
-          <div class="order-detail-row">Payment: ${o.paymentMode === 'pay_now_upi' ? 'Paid via UPI' + (o.utr ? ' (UTR: ' + o.utr + ')' : '') : 'Pay at delivery'}</div>
+          ${o.location ? `<div class="order-detail-row"><a href="https://www.google.com/maps?q=${o.location.lat},${o.location.lng}" target="_blank" style="color:var(--saffron-dark);">📍 Open exact location in Google Maps</a></div>` : ""}
+          <div class="order-detail-row">Payment: ${o.paymentMode === "pay_now_upi" ? "Paid via UPI" + (o.utr ? " (UTR: " + o.utr + ")" : "") : "Pay at delivery"}</div>
           <div class="order-items">
-            ${o.items.map(i => `<div>${i.qty} × ${i.name} <span style="color:var(--muted);">(${i.unit || ''})</span> — ₹${i.price * i.qty}</div>`).join('')}
+            ${o.items.map((i) => `<div>${i.qty} × ${i.name} <span style="color:var(--muted);">(${i.unit || ""})</span> — ₹${i.price * i.qty}</div>`).join("")}
             <div style="margin-top:6px; font-weight:700;">Total: ₹${o.total}</div>
           </div>
           <div class="order-actions">
             ${nextStatus ? `<button class="btn small" onclick="advanceStatus('${doc.id}','${nextStatus}')">Mark as ${STATUS_LABELS[nextStatus]}</button>` : `<span style="font-size:12px; color:var(--muted);">Order complete ✓</span>`}
           </div>
           <div class="notes-row">
-            <input type="text" placeholder="Internal note (only you see this)" value="${o.notes || ''}" id="note-${doc.id}">
+            <input type="text" placeholder="Internal note (only you see this)" value="${o.notes || ""}" id="note-${doc.id}">
             <button class="btn secondary small" onclick="saveNote('${doc.id}')">Save</button>
           </div>
         </div>`;
-    }).join('');
-  }
+          })
+          .join("");
+      }
 
-  function advanceStatus(orderId, newStatus) {
-    db.collection('orders').doc(orderId).update({ status: newStatus });
-  }
-  function saveNote(orderId) {
-    const val = document.getElementById('note-' + orderId).value;
-    db.collection('orders').doc(orderId).update({ notes: val });
-  }
+      function advanceStatus(orderId, newStatus) {
+        db.collection("orders").doc(orderId).update({ status: newStatus });
+      }
+      function saveNote(orderId) {
+        const val = document.getElementById("note-" + orderId).value;
+        db.collection("orders").doc(orderId).update({ notes: val });
+      }
 
-  // ============ CATALOG ============
-  function renderCatalog() {
-    const list = document.getElementById('catalogList');
-    if (categories.length === 0) { list.innerHTML = `<div class="empty-note">No categories yet. Use "Seed sample catalog" to get started quickly, or add one manually.</div>`; return; }
-    list.innerHTML = categories.map(cat => {
-      const items = products.filter(p => p.catId === cat.id);
-      return `
-        <div class="cat-block">
-          <div class="cat-header">
-            <div class="cat-header-main">${thumbHTML(cat.imageUrl, cat.name, 44)}<h3>${cat.name}</h3></div>
-            <button class="btn danger small" onclick="deleteCategory('${cat.id}')">Delete category</button>
-          </div>
-          ${items.map(p => `
-            <div class="prod-row">
-              <div class="prod-row-main">
-                ${thumbHTML(p.imageUrl, p.name)}
-                <div>${p.name} — <span style="color:var(--muted);">${p.unit || ''}</span> — ₹${p.price}
-                  ${p.active === false ? '<em style="color:#C0392B;">(hidden)</em>' : ''}
-                  ${p.inStock === false ? '<em style="color:#C96A0F;">(out of stock)</em>' : ''}
-                </div>
-              </div>
-              <div class="prod-actions">
-                <button class="btn secondary small" onclick="editProduct('${p.id}')">Edit</button>
-                <button class="btn ${p.inStock === false ? '' : 'secondary'} small" onclick="toggleStock('${p.id}', ${p.inStock !== false})">${p.inStock === false ? 'Mark in stock' : 'Mark out of stock'}</button>
-                <button class="btn secondary small" onclick="toggleProduct('${p.id}', ${p.active !== false})">${p.active === false ? 'Show' : 'Hide'}</button>
-                <button class="btn danger small" onclick="deleteProduct('${p.id}')">Delete</button>
-              </div>
-            </div>`).join('') || `<div class="empty-note" style="padding:10px 0;">No items in this category yet.</div>`}
-          <div class="inline-form">
-            <input type="text" placeholder="Item name" id="newName-${cat.id}">
-            <input type="text" placeholder="Unit (e.g. 50g pack)" id="newUnit-${cat.id}">
-            <input type="number" placeholder="Price ₹" id="newPrice-${cat.id}" style="max-width:80px;">
-            <input type="file" accept="image/*" id="newImage-${cat.id}" style="max-width:160px;">
-            <button class="btn small" onclick="addProduct('${cat.id}')">Add item</button>
+      // ============ CATALOG ============
+      function renderCatalog() {
+        if (activeCatId) renderCategoryDetail(activeCatId);
+        else renderCategoryGrid();
+      }
+
+      function renderCategoryGrid() {
+        const list = document.getElementById("catalogList");
+        const cardsHTML = categories
+          .map((cat) => {
+            const count = products.filter((p) => p.catId === cat.id).length;
+            return `
+        <div class="cat-card" onclick="openCategoryDetail('${cat.id}')">
+          <div class="cat-card-thumb">${cat.imageUrl ? `<img src="${cat.imageUrl}" alt="${cat.name}">` : PLACEHOLDER_ICON}</div>
+          <div class="cat-card-info">
+            <div class="cat-card-name">${cat.name}</div>
+            <div class="cat-card-count">${count} item${count === 1 ? "" : "s"}</div>
           </div>
         </div>`;
-    }).join('');
-  }
-
-  function showAddCategoryForm() {
-    document.getElementById('addCategoryFormWrap').innerHTML = `
-      <div class="cat-block">
-        <div class="inline-form">
-          <input type="text" placeholder="Category name" id="newCatName">
-          <input type="file" accept="image/*" id="newCatImage" style="max-width:180px;">
-          <button class="btn small" onclick="addCategory()">Save category</button>
+          })
+          .join("");
+        list.innerHTML = `
+      <div class="cat-grid">
+        ${cardsHTML}
+        <div class="cat-card cat-card-add" onclick="showAddCategoryModal()">
+          <div class="cat-card-add-icon">+</div>
+          <div class="cat-card-name">Add category</div>
         </div>
+      </div>
+      ${categories.length === 0 ? `<div class="empty-note">No categories yet. Use "Seed sample catalog" above, or tap "+ Add category" to start.</div>` : ""}`;
+      }
+
+      function openCategoryDetail(catId) {
+        activeCatId = catId;
+        renderCategoryDetail(catId);
+      }
+
+      function closeCategoryDetail() {
+        activeCatId = null;
+        renderCategoryGrid();
+      }
+
+      function renderCategoryDetail(catId) {
+        const cat = categories.find((c) => c.id === catId);
+        const list = document.getElementById("catalogList");
+        if (!cat) {
+          closeCategoryDetail();
+          return;
+        }
+        const items = products.filter((p) => p.catId === catId);
+        list.innerHTML = `
+      <div class="cat-detail-header">
+        <button class="btn secondary small" onclick="closeCategoryDetail()">← Back to categories</button>
+        <div class="cat-detail-title">${thumbHTML(cat.imageUrl, cat.name, 40)}<h3>${cat.name}</h3></div>
+        <button class="btn danger small" onclick="deleteCategory('${cat.id}')">Delete category</button>
+      </div>
+      <div class="prod-card-list">
+        ${
+          items
+            .map(
+              (p) => `
+          <div class="prod-card">
+            <div class="prod-card-thumb">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : PLACEHOLDER_ICON}</div>
+            <div class="prod-card-body">
+              <div class="prod-card-name">${p.name}</div>
+              <div class="prod-card-meta">${p.unit || ""} · ₹${p.price}</div>
+              <div class="prod-card-tags">
+                ${p.active === false ? '<span class="prod-tag hidden-tag">Hidden</span>' : ""}
+                ${p.inStock === false ? '<span class="prod-tag oos-tag">Out of stock</span>' : ""}
+              </div>
+            </div>
+            <div class="prod-card-actions">
+              <button class="btn secondary small" onclick="editProduct('${p.id}')">Edit</button>
+              <button class="btn secondary small" onclick="toggleStock('${p.id}', ${p.inStock !== false})">${p.inStock === false ? "Mark in stock" : "Mark out"}</button>
+              <button class="btn secondary small" onclick="toggleProduct('${p.id}', ${p.active !== false})">${p.active === false ? "Show" : "Hide"}</button>
+              <button class="btn danger small" onclick="deleteProduct('${p.id}')">Delete</button>
+            </div>
+          </div>`,
+            )
+            .join("") ||
+          `<div class="empty-note">No items in this category yet — add the first one below.</div>`
+        }
+      </div>
+      <div class="add-item-card">
+        <h4>Add item to ${cat.name}</h4>
+        <div class="form-group"><label>Item name</label><input type="text" id="newItemName"></div>
+        <div class="form-group"><label>Unit (e.g. 50g pack)</label><input type="text" id="newItemUnit"></div>
+        <div class="form-group"><label>Price (₹)</label><input type="number" id="newItemPrice"></div>
+        <div class="form-group">
+          <label>Photo</label>
+          <div class="image-upload-row">
+            <button type="button" class="upload-btn" onclick="triggerFileInput('newItemImage', true)">📷 Take Photo</button>
+            <button type="button" class="upload-btn secondary" onclick="triggerFileInput('newItemImage', false)">🖼 Gallery</button>
+          </div>
+          <input type="file" accept="image/*" id="newItemImage" style="display:none;" onchange="updateFileLabel('newItemImage')">
+          <div class="upload-filename" id="newItemImage-label"></div>
+        </div>
+        <button class="btn" onclick="addProduct('${cat.id}')">Add item</button>
       </div>`;
-  }
+      }
 
-  async function addCategory() {
-    const name = document.getElementById('newCatName').value.trim();
-    const fileInput = document.getElementById('newCatImage');
-    if (!name) return;
-    const imageUrl = await uploadImageIfSelected(fileInput, 'categories');
-    const data = { name, order: categories.length };
-    if (imageUrl) data.imageUrl = imageUrl;
-    await db.collection('categories').add(data);
-    document.getElementById('addCategoryFormWrap').innerHTML = '';
-  }
+      function showAddCategoryModal() {
+        document.getElementById("newCatName").value = "";
+        document.getElementById("newCatImage").value = "";
+        document.getElementById("newCatImage-label").textContent = "";
+        document.getElementById("addCategoryModal").classList.add("open");
+      }
+      function closeAddCategoryModal() {
+        document.getElementById("addCategoryModal").classList.remove("open");
+      }
 
-  async function deleteCategory(catId) {
-    if (!confirm('Delete this category and all its items?')) return;
-    const batch = db.batch();
-    products.filter(p => p.catId === catId).forEach(p => batch.delete(db.collection('products').doc(p.id)));
-    batch.delete(db.collection('categories').doc(catId));
-    await batch.commit();
-  }
+      async function addCategory() {
+        const name = document.getElementById("newCatName").value.trim();
+        const fileInput = document.getElementById("newCatImage");
+        if (!name) {
+          alert("Please enter a category name.");
+          return;
+        }
+        const imageUrl = await uploadImageIfSelected(fileInput, "categories");
+        const data = { name, order: categories.length };
+        if (imageUrl) data.imageUrl = imageUrl;
+        await db.collection("categories").add(data);
+        closeAddCategoryModal();
+      }
 
-  async function addProduct(catId) {
-    const name = document.getElementById(`newName-${catId}`).value.trim();
-    const unit = document.getElementById(`newUnit-${catId}`).value.trim();
-    const price = parseFloat(document.getElementById(`newPrice-${catId}`).value);
-    const fileInput = document.getElementById(`newImage-${catId}`);
-    if (!name || isNaN(price)) { alert('Please enter at least a name and price.'); return; }
-    const imageUrl = await uploadImageIfSelected(fileInput, 'products');
-    const data = { catId, name, unit, price, active: true, inStock: true };
-    if (imageUrl) data.imageUrl = imageUrl;
-    await db.collection('products').add(data);
-  }
+      async function deleteCategory(catId) {
+        if (!confirm("Delete this category and all its items?")) return;
+        const batch = db.batch();
+        products
+          .filter((p) => p.catId === catId)
+          .forEach((p) => batch.delete(db.collection("products").doc(p.id)));
+        batch.delete(db.collection("categories").doc(catId));
+        await batch.commit();
+        closeCategoryDetail();
+      }
 
-  let editingProductId = null;
+      async function addProduct(catId) {
+        const name = document.getElementById("newItemName").value.trim();
+        const unit = document.getElementById("newItemUnit").value.trim();
+        const price = parseFloat(document.getElementById("newItemPrice").value);
+        const fileInput = document.getElementById("newItemImage");
+        if (!name || isNaN(price)) {
+          alert("Please enter at least a name and price.");
+          return;
+        }
+        const imageUrl = await uploadImageIfSelected(fileInput, "products");
+        const data = { catId, name, unit, price, active: true, inStock: true };
+        if (imageUrl) data.imageUrl = imageUrl;
+        await db.collection("products").add(data);
+      }
 
-  function editProduct(prodId) {
-    const p = products.find(x => x.id === prodId);
-    if (!p) return;
-    editingProductId = prodId;
-    document.getElementById('editName').value = p.name || '';
-    document.getElementById('editUnit').value = p.unit || '';
-    document.getElementById('editPrice').value = p.price || '';
-    document.getElementById('editImageFile').value = '';
-    const preview = document.getElementById('editImagePreview');
-    if (p.imageUrl) { preview.src = p.imageUrl; preview.style.display = 'block'; }
-    else { preview.style.display = 'none'; }
-    document.getElementById('editModal').classList.add('open');
-  }
+      let editingProductId = null;
 
-  function closeEditModal() {
-    document.getElementById('editModal').classList.remove('open');
-    editingProductId = null;
-  }
+      function editProduct(prodId) {
+        const p = products.find((x) => x.id === prodId);
+        if (!p) return;
+        editingProductId = prodId;
+        document.getElementById("editName").value = p.name || "";
+        document.getElementById("editUnit").value = p.unit || "";
+        document.getElementById("editPrice").value = p.price || "";
+        document.getElementById("editImageFile").value = "";
+        const preview = document.getElementById("editImagePreview");
+        if (p.imageUrl) {
+          preview.src = p.imageUrl;
+          preview.style.display = "block";
+        } else {
+          preview.style.display = "none";
+        }
+        document.getElementById("editModal").classList.add("open");
+      }
 
-  async function saveEditModal() {
-    if (!editingProductId) return;
-    const name = document.getElementById('editName').value.trim();
-    const unit = document.getElementById('editUnit').value.trim();
-    const price = parseFloat(document.getElementById('editPrice').value);
-    if (!name || isNaN(price)) { alert('Please enter at least a name and a valid price.'); return; }
-    const btn = document.getElementById('editSaveBtn');
-    btn.disabled = true; btn.textContent = 'Saving…';
-    const fileInput = document.getElementById('editImageFile');
-    const newImageUrl = await uploadImageIfSelected(fileInput, 'products');
-    const data = { name, unit, price };
-    if (newImageUrl) data.imageUrl = newImageUrl;
-    await db.collection('products').doc(editingProductId).update(data);
-    btn.disabled = false; btn.textContent = 'Save changes';
-    closeEditModal();
-  }
+      function closeEditModal() {
+        document.getElementById("editModal").classList.remove("open");
+        editingProductId = null;
+      }
 
-  function toggleProduct(prodId, currentlyActive) {
-    db.collection('products').doc(prodId).update({ active: !currentlyActive });
-  }
+      async function saveEditModal() {
+        if (!editingProductId) return;
+        const name = document.getElementById("editName").value.trim();
+        const unit = document.getElementById("editUnit").value.trim();
+        const price = parseFloat(document.getElementById("editPrice").value);
+        if (!name || isNaN(price)) {
+          alert("Please enter at least a name and a valid price.");
+          return;
+        }
+        const btn = document.getElementById("editSaveBtn");
+        btn.disabled = true;
+        btn.textContent = "Saving…";
+        const fileInput = document.getElementById("editImageFile");
+        const newImageUrl = await uploadImageIfSelected(fileInput, "products");
+        const data = { name, unit, price };
+        if (newImageUrl) data.imageUrl = newImageUrl;
+        await db.collection("products").doc(editingProductId).update(data);
+        btn.disabled = false;
+        btn.textContent = "Save changes";
+        closeEditModal();
+      }
 
-  function toggleStock(prodId, currentlyInStock) {
-    db.collection('products').doc(prodId).update({ inStock: !currentlyInStock });
-  }
+      function toggleProduct(prodId, currentlyActive) {
+        db.collection("products")
+          .doc(prodId)
+          .update({ active: !currentlyActive });
+      }
 
-  function deleteProduct(prodId) {
-    if (!confirm('Delete this item?')) return;
-    db.collection('products').doc(prodId).delete();
-  }
+      function toggleStock(prodId, currentlyInStock) {
+        db.collection("products")
+          .doc(prodId)
+          .update({ inStock: !currentlyInStock });
+      }
 
-  // ============ SEED SAMPLE CATALOG ============
-  async function seedSampleCatalog() {
-    if (categories.length > 0 && !confirm('Catalog already has items. Add sample items anyway (in addition to existing ones)?')) return;
-    const seedCategories = [
-      { id: 'daily', name: 'Daily Essentials' },
-      { id: 'festival', name: 'Festival Kits' },
-      { id: 'flowers', name: 'Flowers & Leaves' },
-      { id: 'incense', name: 'Incense & Dhoop' },
-      { id: 'idols', name: 'Idols & Frames' },
-      { id: 'accessories', name: 'Puja Accessories' },
-    ];
-    const seedProducts = [
-      ['daily','Kumkum (Roli)','25g pack',25], ['daily','Chandan Tika Powder','50g pack',40],
-      ['daily','Camphor (Kapoor) Tablets','Pack of 20',30], ['daily','Cotton Wicks (Rui Batti)','Pack of 100',20],
-      ['daily','Mauli / Kalava Thread','1 roll',15], ['daily','Akshat (Sacred Rice)','100g pack',20],
-      ['daily','Ghee Diya Wicks','Pack of 50',35], ['daily','Panchmeva (Dry Fruit Mix)','100g pack',90],
-      ['daily','Gangajal','200ml bottle',25],
-      ['festival','Satyanarayan Puja Kit','Full kit',349], ['festival','Navratri Kalash Sthapana Kit','Full kit',299],
-      ['festival','Diwali Lakshmi-Ganesh Thali Set','Full kit',399], ['festival','Ganesh Chaturthi Puja Kit','Full kit',329],
-      ['festival','Karva Chauth Puja Thali Kit','Full kit',279], ['festival','Griha Pravesh Puja Kit','Full kit',449],
-      ['flowers','Marigold Garland (Genda Mala)','1 piece',40], ['flowers','Rose Petals','200g pack',35],
-      ['flowers','Bael Patra (Bilva Leaves)','1 bunch',15], ['flowers','Tulsi Leaves','1 bunch',10],
-      ['flowers','Durva Grass','1 bunch',10], ['flowers','Loose Marigold Flowers','250g pack',30],
-      ['incense','Sandalwood Agarbatti','Pack of 20',45], ['incense','Chandan Dhoop Sticks','Pack of 10',55],
-      ['incense','Sambrani Cups','Pack of 12',60], ['incense','Loban (Frankincense)','50g pack',40],
-      ['incense','Guggal Dhoop','100g pack',70],
-      ['idols','Ganesh Idol (Brass, Small)','1 piece',249], ['idols','Laxmi-Ganesh Photo Frame','1 piece',199],
-      ['idols','Krishna Idol (Marble Finish)','1 piece',399], ['idols','Shivling (Small Brass)','1 piece',299],
-      ['accessories','Puja Thali Set (Steel, 7pc)','1 set',249], ['accessories','Brass Ghanti (Bell)','1 piece',120],
-      ['accessories','Copper Kalash','1 piece',349], ['accessories','Havan Kund (Iron, Small)','1 piece',299],
-      ['accessories','Havan Samagri (Herbal Mix)','250g pack',60], ['accessories','Coconut (Nariyal)','1 piece',30],
-      ['accessories','Betel Nuts (Supari)','100g pack',35], ['accessories','Betel Leaves (Paan)','Pack of 10',20],
-    ];
+      function deleteProduct(prodId) {
+        if (!confirm("Delete this item?")) return;
+        db.collection("products").doc(prodId).delete();
+      }
 
-    const batch = db.batch();
-    seedCategories.forEach((cat, i) => {
-      const ref = db.collection('categories').doc(cat.id);
-      batch.set(ref, { name: cat.name, order: i }, { merge: true });
-    });
-    seedProducts.forEach(([catId, name, unit, price]) => {
-      const ref = db.collection('products').doc();
-      batch.set(ref, { catId, name, unit, price, active: true, inStock: true });
-    });
-    await batch.commit();
-    alert('Sample catalog added! Items show a placeholder icon until you upload real photos for each one.');
-  }
-</script>
+      // ============ SEED SAMPLE CATALOG ============
+      async function seedSampleCatalog() {
+        if (
+          categories.length > 0 &&
+          !confirm(
+            "Catalog already has items. Add sample items anyway (in addition to existing ones)?",
+          )
+        )
+          return;
+        const seedCategories = [
+          { id: "daily", name: "Daily Essentials" },
+          { id: "festival", name: "Festival Kits" },
+          { id: "flowers", name: "Flowers & Leaves" },
+          { id: "incense", name: "Incense & Dhoop" },
+          { id: "idols", name: "Idols & Frames" },
+          { id: "accessories", name: "Puja Accessories" },
+        ];
+        const seedProducts = [
+          ["daily", "Kumkum (Roli)", "25g pack", 25],
+          ["daily", "Chandan Tika Powder", "50g pack", 40],
+          ["daily", "Camphor (Kapoor) Tablets", "Pack of 20", 30],
+          ["daily", "Cotton Wicks (Rui Batti)", "Pack of 100", 20],
+          ["daily", "Mauli / Kalava Thread", "1 roll", 15],
+          ["daily", "Akshat (Sacred Rice)", "100g pack", 20],
+          ["daily", "Ghee Diya Wicks", "Pack of 50", 35],
+          ["daily", "Panchmeva (Dry Fruit Mix)", "100g pack", 90],
+          ["daily", "Gangajal", "200ml bottle", 25],
+          ["festival", "Satyanarayan Puja Kit", "Full kit", 349],
+          ["festival", "Navratri Kalash Sthapana Kit", "Full kit", 299],
+          ["festival", "Diwali Lakshmi-Ganesh Thali Set", "Full kit", 399],
+          ["festival", "Ganesh Chaturthi Puja Kit", "Full kit", 329],
+          ["festival", "Karva Chauth Puja Thali Kit", "Full kit", 279],
+          ["festival", "Griha Pravesh Puja Kit", "Full kit", 449],
+          ["flowers", "Marigold Garland (Genda Mala)", "1 piece", 40],
+          ["flowers", "Rose Petals", "200g pack", 35],
+          ["flowers", "Bael Patra (Bilva Leaves)", "1 bunch", 15],
+          ["flowers", "Tulsi Leaves", "1 bunch", 10],
+          ["flowers", "Durva Grass", "1 bunch", 10],
+          ["flowers", "Loose Marigold Flowers", "250g pack", 30],
+          ["incense", "Sandalwood Agarbatti", "Pack of 20", 45],
+          ["incense", "Chandan Dhoop Sticks", "Pack of 10", 55],
+          ["incense", "Sambrani Cups", "Pack of 12", 60],
+          ["incense", "Loban (Frankincense)", "50g pack", 40],
+          ["incense", "Guggal Dhoop", "100g pack", 70],
+          ["idols", "Ganesh Idol (Brass, Small)", "1 piece", 249],
+          ["idols", "Laxmi-Ganesh Photo Frame", "1 piece", 199],
+          ["idols", "Krishna Idol (Marble Finish)", "1 piece", 399],
+          ["idols", "Shivling (Small Brass)", "1 piece", 299],
+          ["accessories", "Puja Thali Set (Steel, 7pc)", "1 set", 249],
+          ["accessories", "Brass Ghanti (Bell)", "1 piece", 120],
+          ["accessories", "Copper Kalash", "1 piece", 349],
+          ["accessories", "Havan Kund (Iron, Small)", "1 piece", 299],
+          ["accessories", "Havan Samagri (Herbal Mix)", "250g pack", 60],
+          ["accessories", "Coconut (Nariyal)", "1 piece", 30],
+          ["accessories", "Betel Nuts (Supari)", "100g pack", 35],
+          ["accessories", "Betel Leaves (Paan)", "Pack of 10", 20],
+        ];
 
-</body>
+        const batch = db.batch();
+        seedCategories.forEach((cat, i) => {
+          const ref = db.collection("categories").doc(cat.id);
+          batch.set(ref, { name: cat.name, order: i }, { merge: true });
+        });
+        seedProducts.forEach(([catId, name, unit, price]) => {
+          const ref = db.collection("products").doc();
+          batch.set(ref, {
+            catId,
+            name,
+            unit,
+            price,
+            active: true,
+            inStock: true,
+          });
+        });
+        await batch.commit();
+        alert(
+          "Sample catalog added! Items show a placeholder icon until you upload real photos for each one.",
+        );
+      }
+    </script>
+  </body>
 </html>
