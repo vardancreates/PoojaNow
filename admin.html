@@ -230,6 +230,16 @@
       .order-detail-row b {
         color: var(--maroon-deep);
       }
+      .repeat-tag {
+        display: inline-block;
+        font-size: 10.5px;
+        font-weight: 700;
+        background: #eae0f5;
+        color: #6b3fa0;
+        padding: 2px 9px;
+        border-radius: 6px;
+        margin-left: 4px;
+      }
       .order-items {
         margin: 10px 0;
         padding: 10px 12px;
@@ -253,6 +263,52 @@
       }
       .notes-row input {
         flex: 1;
+      }
+      .order-filter-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .filter-btn {
+        padding: 8px 16px;
+        border-radius: 10px;
+        border: 1.5px solid var(--line);
+        background: var(--cream-card);
+        color: var(--charcoal);
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: "Poppins", sans-serif;
+        transition: all 0.2s var(--ease);
+      }
+      .filter-btn.active {
+        background: linear-gradient(
+          135deg,
+          var(--marigold),
+          var(--saffron-dark)
+        );
+        color: white;
+        border-color: transparent;
+      }
+      .order-summary-strip {
+        background: var(--ivory-warm);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 18px;
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .summary-stat-value {
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--maroon-deep);
+      }
+      .summary-stat-label {
+        font-size: 10.5px;
+        color: var(--muted);
+        margin-top: 2px;
       }
 
       /* ---- Catalog ---- */
@@ -451,6 +507,28 @@
         color: var(--muted);
         margin-top: 2px;
       }
+      .cat-reorder-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .reorder-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        border: 1px solid var(--line);
+        background: var(--ivory-warm);
+        color: var(--maroon-deep);
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .reorder-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .reorder-btn:active:not(:disabled) {
+        transform: scale(0.9);
+      }
       .cat-card-add {
         display: flex;
         flex-direction: column;
@@ -505,6 +583,34 @@
         display: flex;
         gap: 12px;
         align-items: center;
+      }
+      .prod-select-checkbox {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--saffron);
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+      .bulk-action-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--maroon);
+        color: white;
+        border-radius: 12px;
+        padding: 10px 14px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+      .bulk-action-bar span {
+        font-size: 12.5px;
+        font-weight: 600;
+        margin-right: auto;
+      }
+      .bulk-action-bar .btn.secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.3);
       }
       .prod-card-thumb {
         width: 52px;
@@ -646,6 +752,23 @@
       </div>
 
       <div class="tab-content active" id="tabOrders">
+        <div class="order-filter-row">
+          <button
+            class="filter-btn active"
+            id="filterToday"
+            onclick="setOrderFilter('today')"
+          >
+            Today
+          </button>
+          <button
+            class="filter-btn"
+            id="filterAll"
+            onclick="setOrderFilter('all')"
+          >
+            All orders
+          </button>
+        </div>
+        <div class="order-summary-strip" id="orderSummaryStrip"></div>
         <div id="ordersList"><div class="empty-note">Loading orders…</div></div>
       </div>
 
@@ -825,9 +948,13 @@
       let categories = [];
       let products = [];
       let activeCatId = null;
+      let selectedProductIds = new Set();
+      let allOrders = [];
+      let orderFilter = "today";
       let ordersUnsub = null,
         catUnsub = null,
         prodUnsub = null;
+      ((catUnsub = null), (prodUnsub = null));
       // ============ AUTH ============
       auth.onAuthStateChanged((user) => {
         if (user) {
@@ -878,7 +1005,13 @@
         ordersUnsub = db
           .collection("orders")
           .orderBy("createdAt", "desc")
-          .onSnapshot(renderOrders, (err) => console.error(err));
+          .onSnapshot(
+            (snap) => {
+              allOrders = snap.docs;
+              renderOrdersList();
+            },
+            (err) => console.error(err),
+          );
         catUnsub = db
           .collection("categories")
           .orderBy("order")
@@ -899,30 +1032,83 @@
       }
 
       // ============ ORDERS ============
-      function renderOrders(snap) {
+      function isToday(timestamp) {
+        if (!timestamp) return false;
+        return timestamp.toDate().toDateString() === new Date().toDateString();
+      }
+
+      function formatDeliveryDateAdmin(iso) {
+        if (!iso) return "—";
+        const date = new Date(iso);
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        const dateStr = date.toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+        });
+        if (date.toDateString() === today.toDateString())
+          return `Today, ${dateStr}`;
+        if (date.toDateString() === tomorrow.toDateString())
+          return `Tomorrow, ${dateStr}`;
+        return dateStr;
+      }
+
+      function setOrderFilter(f) {
+        orderFilter = f;
+        document
+          .getElementById("filterToday")
+          .classList.toggle("active", f === "today");
+        document
+          .getElementById("filterAll")
+          .classList.toggle("active", f === "all");
+        renderOrdersList();
+      }
+
+      function renderOrdersList() {
+        const filtered =
+          orderFilter === "today"
+            ? allOrders.filter((doc) => isToday(doc.data().createdAt))
+            : allOrders;
+
+        const strip = document.getElementById("orderSummaryStrip");
+        const totalAmount = filtered.reduce(
+          (sum, doc) => sum + (doc.data().total || 0),
+          0,
+        );
+        strip.innerHTML = `
+    <div><div class="summary-stat-value">${filtered.length}</div><div class="summary-stat-label">${orderFilter === "today" ? "Orders today" : "Total orders"}</div></div>
+    <div><div class="summary-stat-value">₹${totalAmount}</div><div class="summary-stat-label">${orderFilter === "today" ? "Today's value" : "Total value"}</div></div>`;
+
         const list = document.getElementById("ordersList");
-        if (snap.empty) {
-          list.innerHTML = `<div class="empty-note">No orders yet. They'll show up here the moment a customer checks out.</div>`;
+        if (filtered.length === 0) {
+          list.innerHTML = `<div class="empty-note">${orderFilter === "today" ? "No orders today yet." : "No orders yet. They'll show up here the moment a customer checks out."}</div>`;
           return;
         }
-        list.innerHTML = snap.docs
+        list.innerHTML = filtered
           .map((doc) => {
             const o = doc.data();
             const time = o.createdAt
-              ? o.createdAt.toDate().toLocaleString("en-IN", {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })
+              ? o.createdAt
+                  .toDate()
+                  .toLocaleString("en-IN", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })
               : "—";
             const currentIdx = STATUS_FLOW.indexOf(o.status);
             const nextStatus = STATUS_FLOW[currentIdx + 1];
+            const customerOrderCount = allOrders.filter(
+              (d) => d.data().phone === o.phone,
+            ).length;
             return `
         <div class="order-card">
           <div class="order-top">
             <div><div class="order-id">#${o.orderId}</div><div class="order-time">${time}</div></div>
             <span class="status-pill ${o.status}">${STATUS_LABELS[o.status] || o.status}</span>
           </div>
-          <div class="order-detail-row"><b>${o.customerName}</b> · ${o.phone}</div>
+          <div class="order-detail-row">🚚 Delivery: <b>${formatDeliveryDateAdmin(o.deliveryDate)}</b></div>
+          <div class="order-detail-row"><b>${o.customerName}</b> · ${o.phone} ${customerOrderCount > 1 ? `<span class="repeat-tag">🔁 ${customerOrderCount} orders</span>` : ""}</div>
           <div class="order-detail-row">${o.address}</div>
           ${o.location ? `<div class="order-detail-row"><a href="https://www.google.com/maps?q=${o.location.lat},${o.location.lng}" target="_blank" style="color:var(--saffron-dark);">📍 Open exact location in Google Maps</a></div>` : ""}
           <div class="order-detail-row">Payment: ${o.paymentMode === "pay_now_upi" ? "Paid via UPI" + (o.utr ? " (UTR: " + o.utr + ")" : "") : "Pay at delivery"}</div>
@@ -959,16 +1145,20 @@
       function renderCategoryGrid() {
         const list = document.getElementById("catalogList");
         const cardsHTML = categories
-          .map((cat) => {
+          .map((cat, i) => {
             const count = products.filter((p) => p.catId === cat.id).length;
             return `
-        <div class="cat-card" onclick="openCategoryDetail('${cat.id}')">
-          <div class="cat-card-thumb">${cat.imageUrl ? `<img src="${cat.imageUrl}" alt="${cat.name}">` : PLACEHOLDER_ICON}</div>
-          <div class="cat-card-info">
-            <div class="cat-card-name">${cat.name}</div>
-            <div class="cat-card-count">${count} item${count === 1 ? "" : "s"}</div>
+      <div class="cat-card" onclick="openCategoryDetail('${cat.id}')">
+        <div class="cat-card-thumb">${cat.imageUrl ? `<img src="${cat.imageUrl}" alt="${cat.name}">` : PLACEHOLDER_ICON}</div>
+        <div class="cat-card-info">
+          <div class="cat-card-name">${cat.name}</div>
+          <div class="cat-card-count">${count} item${count === 1 ? "" : "s"}</div>
+          <div class="cat-reorder-row">
+            <button class="reorder-btn" onclick="event.stopPropagation(); moveCategory('${cat.id}','up')" ${i === 0 ? "disabled" : ""}>↑</button>
+            <button class="reorder-btn" onclick="event.stopPropagation(); moveCategory('${cat.id}','down')" ${i === categories.length - 1 ? "disabled" : ""}>↓</button>
           </div>
-        </div>`;
+        </div>
+      </div>`;
           })
           .join("");
         list.innerHTML = `
@@ -979,17 +1169,70 @@
           <div class="cat-card-name">Add category</div>
         </div>
       </div>
-      ${categories.length === 0 ? `<div class="empty-note">No categories yet. Use "Seed sample catalog" above, or tap "+ Add category" to start.</div>` : ""}`;
+          ${categories.length === 0 ? `<div class="empty-note">No categories yet. Use "Seed sample catalog" above, or tap "+ Add category" to start.</div>` : ""}`;
+      }
+
+      async function moveCategory(catId, direction) {
+        const idx = categories.findIndex((c) => c.id === catId);
+        const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= categories.length) return;
+        const a = categories[idx],
+          b = categories[swapIdx];
+        const aOrder = a.order ?? idx;
+        const bOrder = b.order ?? swapIdx;
+        const batch = db.batch();
+        batch.update(db.collection("categories").doc(a.id), { order: bOrder });
+        batch.update(db.collection("categories").doc(b.id), { order: aOrder });
+        await batch.commit();
       }
 
       function openCategoryDetail(catId) {
         activeCatId = catId;
+        selectedProductIds.clear();
         renderCategoryDetail(catId);
       }
 
       function closeCategoryDetail() {
         activeCatId = null;
+        selectedProductIds.clear();
         renderCategoryGrid();
+      }
+
+      function toggleProductSelection(id, checked) {
+        if (checked) selectedProductIds.add(id);
+        else selectedProductIds.delete(id);
+        renderBulkBar();
+      }
+
+      function clearSelection() {
+        selectedProductIds.clear();
+        renderCategoryDetail(activeCatId);
+      }
+
+      function renderBulkBar() {
+        const bar = document.getElementById("bulkActionBar");
+        if (!bar) return;
+        const n = selectedProductIds.size;
+        if (n === 0) {
+          bar.innerHTML = "";
+          return;
+        }
+        bar.innerHTML = `
+    <div class="bulk-action-bar">
+      <span>${n} selected</span>
+      <button class="btn small" onclick="bulkSetStock(false)">Mark out of stock</button>
+      <button class="btn secondary small" onclick="bulkSetStock(true)">Mark in stock</button>
+      <button class="btn secondary small" onclick="clearSelection()">Cancel</button>
+    </div>`;
+      }
+
+      async function bulkSetStock(inStock) {
+        const batch = db.batch();
+        selectedProductIds.forEach((id) =>
+          batch.update(db.collection("products").doc(id), { inStock }),
+        );
+        await batch.commit();
+        clearSelection();
       }
 
       function renderCategoryDetail(catId) {
@@ -1001,37 +1244,39 @@
         }
         const items = products.filter((p) => p.catId === catId);
         list.innerHTML = `
-      <div class="cat-detail-header">
-        <button class="btn secondary small" onclick="closeCategoryDetail()">← Back to categories</button>
-        <div class="cat-detail-title">${thumbHTML(cat.imageUrl, cat.name, 40)}<h3>${cat.name}</h3></div>
-        <button class="btn danger small" onclick="deleteCategory('${cat.id}')">Delete category</button>
-      </div>
-      <div class="prod-card-list">
-        ${
-          items
-            .map(
-              (p) => `
-          <div class="prod-card">
-            <div class="prod-card-thumb">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : PLACEHOLDER_ICON}</div>
-            <div class="prod-card-body">
-              <div class="prod-card-name">${p.name}</div>
-              <div class="prod-card-meta">${p.unit || ""} · ₹${p.price}</div>
-              <div class="prod-card-tags">
-                ${p.active === false ? '<span class="prod-tag hidden-tag">Hidden</span>' : ""}
-                ${p.inStock === false ? '<span class="prod-tag oos-tag">Out of stock</span>' : ""}
-              </div>
+    <div class="cat-detail-header">
+      <button class="btn secondary small" onclick="closeCategoryDetail()">← Back to categories</button>
+      <div class="cat-detail-title">${thumbHTML(cat.imageUrl, cat.name, 40)}<h3>${cat.name}</h3></div>
+      <button class="btn danger small" onclick="deleteCategory('${cat.id}')">Delete category</button>
+    </div>
+    <div id="bulkActionBar"></div>
+    <div class="prod-card-list">
+      ${
+        items
+          .map(
+            (p) => `
+        <div class="prod-card">
+          <input type="checkbox" class="prod-select-checkbox" onchange="toggleProductSelection('${p.id}', this.checked)" ${selectedProductIds.has(p.id) ? "checked" : ""}>
+          <div class="prod-card-thumb">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : PLACEHOLDER_ICON}</div>
+          <div class="prod-card-body">
+            <div class="prod-card-name">${p.name}</div>
+            <div class="prod-card-meta">${p.unit || ""} · ₹${p.price}</div>
+            <div class="prod-card-tags">
+              ${p.active === false ? '<span class="prod-tag hidden-tag">Hidden</span>' : ""}
+              ${p.inStock === false ? '<span class="prod-tag oos-tag">Out of stock</span>' : ""}
             </div>
-            <div class="prod-card-actions">
-              <button class="btn secondary small" onclick="editProduct('${p.id}')">Edit</button>
-              <button class="btn secondary small" onclick="toggleStock('${p.id}', ${p.inStock !== false})">${p.inStock === false ? "Mark in stock" : "Mark out"}</button>
-              <button class="btn secondary small" onclick="toggleProduct('${p.id}', ${p.active !== false})">${p.active === false ? "Show" : "Hide"}</button>
+          </div>
+          <div class="prod-card-actions">
+            <button class="btn secondary small" onclick="editProduct('${p.id}')">Edit</button>
+            <button class="btn secondary small" onclick="toggleStock('${p.id}', ${p.inStock !== false})">${p.inStock === false ? "Mark in stock" : "Mark out"}</button>
+            <button class="btn secondary small" onclick="toggleProduct('${p.id}', ${p.active !== false})">${p.active === false ? "Show" : "Hide"}</button>
               <button class="btn danger small" onclick="deleteProduct('${p.id}')">Delete</button>
             </div>
           </div>`,
-            )
-            .join("") ||
-          `<div class="empty-note">No items in this category yet — add the first one below.</div>`
-        }
+          )
+          .join("") ||
+        `<div class="empty-note">No items in this category yet — add the first one below.</div>`
+      }
       </div>
       <div class="add-item-card">
         <h4>Add item to ${cat.name}</h4>
