@@ -904,6 +904,10 @@
         border-radius: 10px;
         border: 4px solid var(--charcoal);
       }
+      .qr-placeholder.qr-load-failed {
+        background: #fdeaea !important;
+        border-color: #c0392b;
+      }
 
       .delivery-estimate {
         display: flex;
@@ -2400,11 +2404,18 @@
           `&am=${amount}&cu=INR` +
           `&tn=${encodeURIComponent("PoojaNow order")}`;
         const canvas = document.getElementById("upiQrCanvas");
-        if (window.QRCode) {
-          QRCode.toCanvas(canvas, upiUri, { width: 140, margin: 1 }, (err) => {
-            if (err) console.error(err);
-          });
+        if (!window.QRCode) {
+          console.error("QR library failed to load — check network/CDN access");
+          canvas.classList.add("qr-load-failed");
+          return;
         }
+        canvas.classList.remove("qr-load-failed");
+        QRCode.toCanvas(canvas, upiUri, { width: 140, margin: 1 }, (err) => {
+          if (err) {
+            console.error("QR generation error:", err);
+            canvas.classList.add("qr-load-failed");
+          }
+        });
       }
 
       function togglePaymentConfirmed() {
