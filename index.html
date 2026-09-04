@@ -17,6 +17,7 @@
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
       :root {
         --saffron: #e8871e;
@@ -1568,7 +1569,12 @@
             </div>
           </div>
           <div class="qr-box" id="qrBox">
-            <div class="qr-placeholder"></div>
+            <canvas
+              id="upiQrCanvas"
+              class="qr-placeholder"
+              width="140"
+              height="140"
+            ></canvas>
             <div
               style="font-size: 12px; color: var(--muted); margin-bottom: 8px"
             >
@@ -1750,6 +1756,8 @@
 
     <script>
       const WHATSAPP_SUPPORT_NUMBER = "918557991965"; // dummy — replace with your real number, country code + number, no + or spaces
+      const UPI_VPA = "vardangotra@sbi"; // dummy — replace with your real UPI ID
+      const UPI_PAYEE_NAME = "Vardan Kumar Gotra"; // dummy — replace with your real display/business name
       let categories = [];
       let products = [];
       let cart = {};
@@ -2364,12 +2372,26 @@
             items.reduce((sum, i) => sum + i.product.price * i.qty, 0) + 25;
           document.getElementById("qrAmount").textContent = total;
           qrBox.classList.add("show");
+          generateUpiQr(total);
         } else {
           qrBox.classList.remove("show");
           paymentConfirmed = false;
           const btn = document.getElementById("paymentConfirmBtn");
           btn.textContent = "I've completed the payment ✓";
           btn.classList.remove("confirmed");
+        }
+      }
+      function generateUpiQr(amount) {
+        const upiUri =
+          `upi://pay?pa=${encodeURIComponent(UPI_VPA)}` +
+          `&pn=${encodeURIComponent(UPI_PAYEE_NAME)}` +
+          `&am=${amount}&cu=INR` +
+          `&tn=${encodeURIComponent("PoojaNow order")}`;
+        const canvas = document.getElementById("upiQrCanvas");
+        if (window.QRCode) {
+          QRCode.toCanvas(canvas, upiUri, { width: 140, margin: 1 }, (err) => {
+            if (err) console.error(err);
+          });
         }
       }
 
