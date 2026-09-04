@@ -240,6 +240,16 @@
         border-radius: 6px;
         margin-left: 4px;
       }
+      .paid-tag {
+        display: inline-block;
+        font-size: 10.5px;
+        font-weight: 700;
+        background: #e2f5e5;
+        color: #1e7a34;
+        padding: 2px 9px;
+        border-radius: 6px;
+        margin-left: 6px;
+      }
       .order-items {
         margin: 10px 0;
         padding: 10px 12px;
@@ -713,6 +723,142 @@
         color: var(--muted);
         margin-top: 6px;
       }
+
+      .incoming-order-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 900;
+        background: rgba(107, 20, 32, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .incoming-order-card {
+        background: var(--cream-card);
+        border-radius: 20px;
+        padding: 24px 22px;
+        max-width: 360px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(107, 20, 32, 0.4);
+      }
+      .incoming-order-icon {
+        font-size: 44px;
+        animation: ringShake 0.6s ease-in-out infinite;
+      }
+      @keyframes ringShake {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(-10deg);
+        }
+        75% {
+          transform: rotate(10deg);
+        }
+      }
+      .incoming-order-title {
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--maroon-deep);
+        margin-top: 10px;
+        font-family: "Cormorant Garamond", serif;
+      }
+      .incoming-order-detail {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .incoming-order-amount {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--saffron-dark);
+        margin-top: 10px;
+      }
+      .incoming-order-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .incoming-order-actions button {
+        flex: 1;
+        padding: 13px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        font-family: "Poppins", sans-serif;
+      }
+      .btn-accept-order {
+        background: linear-gradient(
+          135deg,
+          var(--marigold),
+          var(--saffron-dark)
+        );
+        color: white;
+      }
+      .btn-hold-order {
+        background: var(--ivory-warm);
+        color: var(--maroon-deep);
+        border: 1.5px solid var(--line) !important;
+      }
+      .held-orders-badge {
+        position: fixed;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: linear-gradient(135deg, var(--maroon), var(--maroon-deep));
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        cursor: pointer;
+        box-shadow: 0 6px 16px rgba(107, 20, 32, 0.4);
+        z-index: 200;
+        font-size: 18px;
+      }
+      .held-orders-badge .held-count {
+        font-size: 10px;
+        font-weight: 700;
+        margin-top: -2px;
+      }
+      .held-orders-panel {
+        position: fixed;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--cream-card);
+        border-radius: 16px;
+        padding: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        z-index: 201;
+        width: 240px;
+        max-height: 320px;
+        overflow-y: auto;
+      }
+      .held-orders-panel h4 {
+        font-size: 13px;
+        color: var(--maroon-deep);
+        margin-bottom: 8px;
+      }
+      .held-order-row {
+        background: var(--ivory-warm);
+        border-radius: 10px;
+        padding: 9px 11px;
+        margin-bottom: 7px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .held-order-row b {
+        color: var(--maroon-deep);
+      }
     </style>
   </head>
   <body>
@@ -736,6 +882,46 @@
 
     <!-- DASHBOARD -->
     <div id="dashboard">
+      <audio id="orderChimeAudio" loop>
+        <source src="order_chime.wav" type="audio/wav" />
+      </audio>
+
+      <div
+        class="incoming-order-overlay"
+        id="incomingOrderOverlay"
+        style="display: none"
+      >
+        <div class="incoming-order-card">
+          <div class="incoming-order-icon">🔔</div>
+          <div class="incoming-order-title">New order!</div>
+          <div class="incoming-order-detail" id="incomingOrderDetail"></div>
+          <div class="incoming-order-amount" id="incomingOrderAmount"></div>
+          <div class="incoming-order-actions">
+            <button class="btn-hold-order" onclick="holdIncomingOrder()">
+              Hold
+            </button>
+            <button class="btn-accept-order" onclick="acceptIncomingOrder()">
+              Accept
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="held-orders-badge"
+        id="heldOrdersBadge"
+        style="display: none"
+        onclick="toggleHeldPanel()"
+      >
+        📥
+        <div class="held-count" id="heldOrdersCount">0</div>
+      </div>
+
+      <div class="held-orders-panel" id="heldOrdersPanel" style="display: none">
+        <h4>Held orders</h4>
+        <div id="heldOrdersList"></div>
+      </div>
+
       <div class="topbar">
         <h1>🪔 PoojaNow Admin</h1>
         <button class="btn secondary small" onclick="doLogout()">
@@ -954,7 +1140,125 @@
       let ordersUnsub = null,
         catUnsub = null,
         prodUnsub = null;
-      ((catUnsub = null), (prodUnsub = null));
+
+      let incomingQueue = [];
+      let currentIncomingId = null;
+      let firstOrdersSnapshotProcessed = false;
+      let heldOrderIds = new Set(
+        JSON.parse(localStorage.getItem("poojanow_held_orders") || "[]"),
+      );
+
+      function findOrderDoc(orderId) {
+        const doc = allOrders.find((d) => d.id === orderId);
+        return doc ? doc.data() : null;
+      }
+
+      function processIncomingQueue() {
+        if (currentIncomingId) return;
+        if (incomingQueue.length === 0) return;
+        const nextId = incomingQueue.shift();
+        showIncomingOrderCard(nextId, true);
+      }
+
+      function showIncomingOrderCard(orderId, ring) {
+        const order = findOrderDoc(orderId);
+        if (!order) {
+          if (ring) processIncomingQueue();
+          return;
+        }
+        currentIncomingId = orderId;
+        document.getElementById("incomingOrderDetail").textContent =
+          order.customerName +
+          " · " +
+          order.items.length +
+          " item" +
+          (order.items.length > 1 ? "s" : "");
+        document.getElementById("incomingOrderAmount").textContent =
+          "₹" + order.total;
+        document.getElementById("incomingOrderOverlay").style.display = "flex";
+        if (ring) {
+          const audio = document.getElementById("orderChimeAudio");
+          audio.currentTime = 0;
+          audio.play().catch(() => {});
+        }
+      }
+
+      function stopChime() {
+        const audio = document.getElementById("orderChimeAudio");
+        audio.pause();
+        audio.currentTime = 0;
+      }
+
+      function acceptIncomingOrder() {
+        stopChime();
+        if (currentIncomingId) {
+          heldOrderIds.delete(currentIncomingId);
+          localStorage.setItem(
+            "poojanow_held_orders",
+            JSON.stringify([...heldOrderIds]),
+          );
+        }
+        document.getElementById("incomingOrderOverlay").style.display = "none";
+        currentIncomingId = null;
+        renderHeldBadge();
+        processIncomingQueue();
+      }
+
+      function holdIncomingOrder() {
+        stopChime();
+        if (currentIncomingId) {
+          heldOrderIds.add(currentIncomingId);
+          localStorage.setItem(
+            "poojanow_held_orders",
+            JSON.stringify([...heldOrderIds]),
+          );
+        }
+        document.getElementById("incomingOrderOverlay").style.display = "none";
+        currentIncomingId = null;
+        renderHeldBadge();
+        processIncomingQueue();
+      }
+
+      function renderHeldBadge() {
+        const badge = document.getElementById("heldOrdersBadge");
+        document.getElementById("heldOrdersCount").textContent =
+          heldOrderIds.size;
+        badge.style.display = heldOrderIds.size > 0 ? "flex" : "none";
+      }
+
+      function toggleHeldPanel() {
+        const panel = document.getElementById("heldOrdersPanel");
+        if (panel.style.display === "block") {
+          panel.style.display = "none";
+          return;
+        }
+        const list = document.getElementById("heldOrdersList");
+        list.innerHTML =
+          [...heldOrderIds]
+            .map((id) => {
+              const order = findOrderDoc(id);
+              if (!order) return "";
+              return (
+                '<div class="held-order-row" onclick="openHeldOrder(\'' +
+                id +
+                "')\"><b>#" +
+                order.orderId +
+                "</b><br>" +
+                order.customerName +
+                " · ₹" +
+                order.total +
+                "</div>"
+              );
+            })
+            .join("") ||
+          '<div style="font-size:12px;color:var(--muted);">No held orders</div>';
+        panel.style.display = "block";
+      }
+
+      function openHeldOrder(orderId) {
+        document.getElementById("heldOrdersPanel").style.display = "none";
+        showIncomingOrderCard(orderId, false);
+      }
       // ============ AUTH ============
       auth.onAuthStateChanged((user) => {
         if (user) {
@@ -1009,6 +1313,22 @@
             (snap) => {
               allOrders = snap.docs;
               renderOrdersList();
+              renderHeldBadge();
+              if (firstOrdersSnapshotProcessed) {
+                snap.docChanges().forEach((change) => {
+                  if (
+                    change.type === "added" &&
+                    !heldOrderIds.has(change.doc.id) &&
+                    !incomingQueue.includes(change.doc.id) &&
+                    change.doc.id !== currentIncomingId
+                  ) {
+                    incomingQueue.push(change.doc.id);
+                  }
+                });
+                processIncomingQueue();
+              } else {
+                firstOrdersSnapshotProcessed = true;
+              }
             },
             (err) => console.error(err),
           );
@@ -1077,8 +1397,8 @@
           0,
         );
         strip.innerHTML = `
-    <div><div class="summary-stat-value">${filtered.length}</div><div class="summary-stat-label">${orderFilter === "today" ? "Orders today" : "Total orders"}</div></div>
-    <div><div class="summary-stat-value">₹${totalAmount}</div><div class="summary-stat-label">${orderFilter === "today" ? "Today's value" : "Total value"}</div></div>`;
+      <div><div class="summary-stat-value">${filtered.length}</div><div class="summary-stat-label">${orderFilter === "today" ? "Orders today" : "Total orders"}</div></div>
+      <div><div class="summary-stat-value">₹${totalAmount}</div><div class="summary-stat-label">${orderFilter === "today" ? "Today's value" : "Total value"}</div></div>`;
 
         const list = document.getElementById("ordersList");
         if (filtered.length === 0) {
@@ -1089,12 +1409,10 @@
           .map((doc) => {
             const o = doc.data();
             const time = o.createdAt
-              ? o.createdAt
-                  .toDate()
-                  .toLocaleString("en-IN", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })
+              ? o.createdAt.toDate().toLocaleString("en-IN", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })
               : "—";
             const currentIdx = STATUS_FLOW.indexOf(o.status);
             const nextStatus = STATUS_FLOW[currentIdx + 1];
@@ -1102,28 +1420,27 @@
               (d) => d.data().phone === o.phone,
             ).length;
             return `
-        <div class="order-card">
-          <div class="order-top">
-            <div><div class="order-id">#${o.orderId}</div><div class="order-time">${time}</div></div>
-            <span class="status-pill ${o.status}">${STATUS_LABELS[o.status] || o.status}</span>
-          </div>
-          <div class="order-detail-row">🚚 Delivery: <b>${formatDeliveryDateAdmin(o.deliveryDate)}</b></div>
-          <div class="order-detail-row"><b>${o.customerName}</b> · ${o.phone} ${customerOrderCount > 1 ? `<span class="repeat-tag">🔁 ${customerOrderCount} orders</span>` : ""}</div>
-          <div class="order-detail-row">${o.address}</div>
-          ${o.location ? `<div class="order-detail-row"><a href="https://www.google.com/maps?q=${o.location.lat},${o.location.lng}" target="_blank" style="color:var(--saffron-dark);">📍 Open exact location in Google Maps</a></div>` : ""}
-          <div class="order-detail-row">Payment: ${o.paymentMode === "pay_now_upi" ? "Paid via UPI" + (o.utr ? " (UTR: " + o.utr + ")" : "") : "Pay at delivery"}</div>
-          <div class="order-items">
-            ${o.items.map((i) => `<div>${i.qty} × ${i.name} <span style="color:var(--muted);">(${i.unit || ""})</span> — ₹${i.price * i.qty}</div>`).join("")}
-            <div style="margin-top:6px; font-weight:700;">Total: ₹${o.total}</div>
-          </div>
-          <div class="order-actions">
-            ${nextStatus ? `<button class="btn small" onclick="advanceStatus('${doc.id}','${nextStatus}')">Mark as ${STATUS_LABELS[nextStatus]}</button>` : `<span style="font-size:12px; color:var(--muted);">Order complete ✓</span>`}
-          </div>
-          <div class="notes-row">
-            <input type="text" placeholder="Internal note (only you see this)" value="${o.notes || ""}" id="note-${doc.id}">
-            <button class="btn secondary small" onclick="saveNote('${doc.id}')">Save</button>
-          </div>
-        </div>`;
+          <div class="order-card">
+            <div class="order-top">
+              <div><div class="order-id">#${o.orderId}</div><div class="order-time">${time}</div></div>
+              <span class="status-pill ${o.status}">${STATUS_LABELS[o.status] || o.status}</span>
+            </div>
+            <div class="order-detail-row">🚚 Delivery: <b>${formatDeliveryDateAdmin(o.deliveryDate)}</b></div>
+            <div class="order-detail-row"><b>${o.customerName}</b> · ${o.phone} ${customerOrderCount > 1 ? `<span class="repeat-tag">🔁 ${customerOrderCount} orders</span>` : ""}</div>
+            <div class="order-detail-row">${o.address}</div>
+            ${o.location ? `<div class="order-detail-row"><a href="https://www.google.com/maps?q=${o.location.lat},${o.location.lng}" target="_blank" style="color:var(--saffron-dark);">📍 Open exact location in Google Maps</a></div>` : ""}
+            <div class="order-detail-row">Payment: ${o.paymentMode === "pay_now_upi" ? "UPI" + (o.paymentConfirmed ? `<span class="paid-tag">✓ Customer marked as paid</span>` : "") : "Pay at delivery"}</div>            <div class="order-items">
+              ${o.items.map((i) => `<div>${i.qty} × ${i.name} <span style="color:var(--muted);">(${i.unit || ""})</span> — ₹${i.price * i.qty}</div>`).join("")}
+              <div style="margin-top:6px; font-weight:700;">Total: ₹${o.total}</div>
+            </div>
+            <div class="order-actions">
+              ${nextStatus ? `<button class="btn small" onclick="advanceStatus('${doc.id}','${nextStatus}')">Mark as ${STATUS_LABELS[nextStatus]}</button>` : `<span style="font-size:12px; color:var(--muted);">Order complete ✓</span>`}
+            </div>
+            <div class="notes-row">
+              <input type="text" placeholder="Internal note (only you see this)" value="${o.notes || ""}" id="note-${doc.id}">
+              <button class="btn secondary small" onclick="saveNote('${doc.id}')">Save</button>
+            </div>
+          </div>`;
           })
           .join("");
       }
@@ -1148,28 +1465,28 @@
           .map((cat, i) => {
             const count = products.filter((p) => p.catId === cat.id).length;
             return `
-      <div class="cat-card" onclick="openCategoryDetail('${cat.id}')">
-        <div class="cat-card-thumb">${cat.imageUrl ? `<img src="${cat.imageUrl}" alt="${cat.name}">` : PLACEHOLDER_ICON}</div>
-        <div class="cat-card-info">
-          <div class="cat-card-name">${cat.name}</div>
-          <div class="cat-card-count">${count} item${count === 1 ? "" : "s"}</div>
-          <div class="cat-reorder-row">
-            <button class="reorder-btn" onclick="event.stopPropagation(); moveCategory('${cat.id}','up')" ${i === 0 ? "disabled" : ""}>↑</button>
-            <button class="reorder-btn" onclick="event.stopPropagation(); moveCategory('${cat.id}','down')" ${i === categories.length - 1 ? "disabled" : ""}>↓</button>
+        <div class="cat-card" onclick="openCategoryDetail('${cat.id}')">
+          <div class="cat-card-thumb">${cat.imageUrl ? `<img src="${cat.imageUrl}" alt="${cat.name}">` : PLACEHOLDER_ICON}</div>
+          <div class="cat-card-info">
+            <div class="cat-card-name">${cat.name}</div>
+            <div class="cat-card-count">${count} item${count === 1 ? "" : "s"}</div>
+            <div class="cat-reorder-row">
+              <button class="reorder-btn" onclick="event.stopPropagation(); moveCategory('${cat.id}','up')" ${i === 0 ? "disabled" : ""}>↑</button>
+              <button class="reorder-btn" onclick="event.stopPropagation(); moveCategory('${cat.id}','down')" ${i === categories.length - 1 ? "disabled" : ""}>↓</button>
+            </div>
           </div>
-        </div>
-      </div>`;
+        </div>`;
           })
           .join("");
         list.innerHTML = `
-      <div class="cat-grid">
-        ${cardsHTML}
-        <div class="cat-card cat-card-add" onclick="showAddCategoryModal()">
-          <div class="cat-card-add-icon">+</div>
-          <div class="cat-card-name">Add category</div>
+        <div class="cat-grid">
+          ${cardsHTML}
+          <div class="cat-card cat-card-add" onclick="showAddCategoryModal()">
+            <div class="cat-card-add-icon">+</div>
+            <div class="cat-card-name">Add category</div>
+          </div>
         </div>
-      </div>
-          ${categories.length === 0 ? `<div class="empty-note">No categories yet. Use "Seed sample catalog" above, or tap "+ Add category" to start.</div>` : ""}`;
+            ${categories.length === 0 ? `<div class="empty-note">No categories yet. Use "Seed sample catalog" above, or tap "+ Add category" to start.</div>` : ""}`;
       }
 
       async function moveCategory(catId, direction) {
@@ -1218,12 +1535,12 @@
           return;
         }
         bar.innerHTML = `
-    <div class="bulk-action-bar">
-      <span>${n} selected</span>
-      <button class="btn small" onclick="bulkSetStock(false)">Mark out of stock</button>
-      <button class="btn secondary small" onclick="bulkSetStock(true)">Mark in stock</button>
-      <button class="btn secondary small" onclick="clearSelection()">Cancel</button>
-    </div>`;
+      <div class="bulk-action-bar">
+        <span>${n} selected</span>
+        <button class="btn small" onclick="bulkSetStock(false)">Mark out of stock</button>
+        <button class="btn secondary small" onclick="bulkSetStock(true)">Mark in stock</button>
+        <button class="btn secondary small" onclick="clearSelection()">Cancel</button>
+      </div>`;
       }
 
       async function bulkSetStock(inStock) {
@@ -1244,56 +1561,56 @@
         }
         const items = products.filter((p) => p.catId === catId);
         list.innerHTML = `
-    <div class="cat-detail-header">
-      <button class="btn secondary small" onclick="closeCategoryDetail()">← Back to categories</button>
-      <div class="cat-detail-title">${thumbHTML(cat.imageUrl, cat.name, 40)}<h3>${cat.name}</h3></div>
-      <button class="btn danger small" onclick="deleteCategory('${cat.id}')">Delete category</button>
-    </div>
-    <div id="bulkActionBar"></div>
-    <div class="prod-card-list">
-      ${
-        items
-          .map(
-            (p) => `
-        <div class="prod-card">
-          <input type="checkbox" class="prod-select-checkbox" onchange="toggleProductSelection('${p.id}', this.checked)" ${selectedProductIds.has(p.id) ? "checked" : ""}>
-          <div class="prod-card-thumb">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : PLACEHOLDER_ICON}</div>
-          <div class="prod-card-body">
-            <div class="prod-card-name">${p.name}</div>
-            <div class="prod-card-meta">${p.unit || ""} · ₹${p.price}</div>
-            <div class="prod-card-tags">
-              ${p.active === false ? '<span class="prod-tag hidden-tag">Hidden</span>' : ""}
-              ${p.inStock === false ? '<span class="prod-tag oos-tag">Out of stock</span>' : ""}
-            </div>
-          </div>
-          <div class="prod-card-actions">
-            <button class="btn secondary small" onclick="editProduct('${p.id}')">Edit</button>
-            <button class="btn secondary small" onclick="toggleStock('${p.id}', ${p.inStock !== false})">${p.inStock === false ? "Mark in stock" : "Mark out"}</button>
-            <button class="btn secondary small" onclick="toggleProduct('${p.id}', ${p.active !== false})">${p.active === false ? "Show" : "Hide"}</button>
-              <button class="btn danger small" onclick="deleteProduct('${p.id}')">Delete</button>
-            </div>
-          </div>`,
-          )
-          .join("") ||
-        `<div class="empty-note">No items in this category yet — add the first one below.</div>`
-      }
+      <div class="cat-detail-header">
+        <button class="btn secondary small" onclick="closeCategoryDetail()">← Back to categories</button>
+        <div class="cat-detail-title">${thumbHTML(cat.imageUrl, cat.name, 40)}<h3>${cat.name}</h3></div>
+        <button class="btn danger small" onclick="deleteCategory('${cat.id}')">Delete category</button>
       </div>
-      <div class="add-item-card">
-        <h4>Add item to ${cat.name}</h4>
-        <div class="form-group"><label>Item name</label><input type="text" id="newItemName"></div>
-        <div class="form-group"><label>Unit (e.g. 50g pack)</label><input type="text" id="newItemUnit"></div>
-        <div class="form-group"><label>Price (₹)</label><input type="number" id="newItemPrice"></div>
-        <div class="form-group">
-          <label>Photo</label>
-          <div class="image-upload-row">
-            <button type="button" class="upload-btn" onclick="triggerFileInput('newItemImage', true)">📷 Take Photo</button>
-            <button type="button" class="upload-btn secondary" onclick="triggerFileInput('newItemImage', false)">🖼 Gallery</button>
-          </div>
-          <input type="file" accept="image/*" id="newItemImage" style="display:none;" onchange="updateFileLabel('newItemImage')">
-          <div class="upload-filename" id="newItemImage-label"></div>
+      <div id="bulkActionBar"></div>
+      <div class="prod-card-list">
+        ${
+          items
+            .map(
+              (p) => `
+          <div class="prod-card">
+            <input type="checkbox" class="prod-select-checkbox" onchange="toggleProductSelection('${p.id}', this.checked)" ${selectedProductIds.has(p.id) ? "checked" : ""}>
+            <div class="prod-card-thumb">${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : PLACEHOLDER_ICON}</div>
+            <div class="prod-card-body">
+              <div class="prod-card-name">${p.name}</div>
+              <div class="prod-card-meta">${p.unit || ""} · ₹${p.price}</div>
+              <div class="prod-card-tags">
+                ${p.active === false ? '<span class="prod-tag hidden-tag">Hidden</span>' : ""}
+                ${p.inStock === false ? '<span class="prod-tag oos-tag">Out of stock</span>' : ""}
+              </div>
+            </div>
+            <div class="prod-card-actions">
+              <button class="btn secondary small" onclick="editProduct('${p.id}')">Edit</button>
+              <button class="btn secondary small" onclick="toggleStock('${p.id}', ${p.inStock !== false})">${p.inStock === false ? "Mark in stock" : "Mark out"}</button>
+              <button class="btn secondary small" onclick="toggleProduct('${p.id}', ${p.active !== false})">${p.active === false ? "Show" : "Hide"}</button>
+                <button class="btn danger small" onclick="deleteProduct('${p.id}')">Delete</button>
+              </div>
+            </div>`,
+            )
+            .join("") ||
+          `<div class="empty-note">No items in this category yet — add the first one below.</div>`
+        }
         </div>
-        <button class="btn" onclick="addProduct('${cat.id}')">Add item</button>
-      </div>`;
+        <div class="add-item-card">
+          <h4>Add item to ${cat.name}</h4>
+          <div class="form-group"><label>Item name</label><input type="text" id="newItemName"></div>
+          <div class="form-group"><label>Unit (e.g. 50g pack)</label><input type="text" id="newItemUnit"></div>
+          <div class="form-group"><label>Price (₹)</label><input type="number" id="newItemPrice"></div>
+          <div class="form-group">
+            <label>Photo</label>
+            <div class="image-upload-row">
+              <button type="button" class="upload-btn" onclick="triggerFileInput('newItemImage', true)">📷 Take Photo</button>
+              <button type="button" class="upload-btn secondary" onclick="triggerFileInput('newItemImage', false)">🖼 Gallery</button>
+            </div>
+            <input type="file" accept="image/*" id="newItemImage" style="display:none;" onchange="updateFileLabel('newItemImage')">
+            <div class="upload-filename" id="newItemImage-label"></div>
+          </div>
+          <button class="btn" onclick="addProduct('${cat.id}')">Add item</button>
+        </div>`;
       }
 
       function showAddCategoryModal() {
