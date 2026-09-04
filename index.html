@@ -1821,6 +1821,7 @@
 
       auth.onAuthStateChanged(async (user) => {
         currentUser = user;
+        initMiniOrderBar();
         if (user) {
           document.getElementById("authOverlay").style.display = "none";
           const doc = await db.collection("customers").doc(user.uid).get();
@@ -1947,16 +1948,24 @@
       }
 
       function saveOrderId(orderId) {
+        const ownerId = currentUser ? currentUser.uid : "guest";
         let saved = getSavedOrderIds().filter((o) => o.orderId !== orderId);
-        saved.unshift({ orderId, createdAt: Date.now() });
+        saved.unshift({ orderId, createdAt: Date.now(), ownerId });
         localStorage.setItem(
           ORDERS_STORAGE_KEY,
           JSON.stringify(saved.slice(0, 10)),
         );
       }
 
+      function getSavedOrderIdsForCurrentUser() {
+        const ownerId = currentUser ? currentUser.uid : "guest";
+        return getSavedOrderIds().filter(
+          (o) => (o.ownerId || "guest") === ownerId,
+        );
+      }
+
       function initMiniOrderBar() {
-        const saved = getSavedOrderIds();
+        const saved = getSavedOrderIdsForCurrentUser();
         if (miniBarUnsub) {
           miniBarUnsub();
           miniBarUnsub = null;
@@ -1998,7 +2007,7 @@
             .get();
           valid = snap.docs.map((d) => ({ id: d.id, data: d.data() }));
         } else {
-          const saved = getSavedOrderIds();
+          const saved = getSavedOrderIdsForCurrentUser();
           const results = await Promise.all(
             saved.map(async (s) => {
               const doc = await db.collection("orders").doc(s.orderId).get();
@@ -2031,6 +2040,8 @@
         expandOrder(valid[0].id, valid[0].data);
       }
 
+      let expandedOrderUnsub = null;
+
       function expandOrder(orderId, preloadedData) {
         const render = (order) => {
           document.getElementById("expandedOrderTrack").innerHTML = `
@@ -2038,14 +2049,15 @@
         <div class="status-track" id="expandedStatusTrack"></div>`;
           renderStatusTrack("expandedStatusTrack", order.status);
         };
-        if (preloadedData) {
-          render(preloadedData);
-          return;
+        if (preloadedData) render(preloadedData);
+        if (expandedOrderUnsub) {
+          expandedOrderUnsub();
+          expandedOrderUnsub = null;
         }
-        db.collection("orders")
+        expandedOrderUnsub = db
+          .collection("orders")
           .doc(orderId)
-          .get()
-          .then((doc) => {
+          .onSnapshot((doc) => {
             if (doc.exists) render(doc.data());
           });
       }
@@ -2558,6 +2570,7 @@
               { merge: true },
             );
           saveOrderId(orderId);
+          initMiniOrderBar();
           document.getElementById("orderIdText").textContent = "#" + orderId;
           document.getElementById("whatsappOrderHelpLink").href =
             `https://wa.me/${WHATSAPP_SUPPORT_NUMBER}?text=${encodeURIComponent("Hi, I need help with my PoojaNow order #" + orderId)}`;
